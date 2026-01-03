@@ -39,11 +39,11 @@ export default function CTA() {
             {/* Award Badge - Hidden on mobile for cleaner look */}
             <div className="absolute top-6 left-6 z-20 hidden lg:flex items-center gap-3">
               {/* Orange Circle */}
-              <div className="w-6 h-6 rounded-full bg-[#F5A623] flex items-center justify-center shrink-0" />
+              <div className="w-6 h-6 rounded-full bg-[#FF7F00] flex items-center justify-center shrink-0" />
 
               {/* Award Text */}
               <span
-                className="text-[#F5A623] italic text-lg whitespace-nowrap"
+                className="text-[#FF7F00] italic text-lg whitespace-nowrap"
                 style={{ fontFamily: "var(--font-decorative)" }}
               >
                 Süper Hizmet Ödülü

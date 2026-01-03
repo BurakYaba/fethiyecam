@@ -80,7 +80,7 @@ export default function Testimonials() {
                   {Array.from({ length: testimonial.rating }).map((_, i) => (
                     <RiStarLine
                       key={i}
-                      className="w-5 h-5 text-[#F5A623] fill-[#F5A623]"
+                      className="w-5 h-5 text-[#FF7F00] fill-[#FF7F00]"
                     />
                   ))}
                 </div>

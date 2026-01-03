@@ -1,20 +1,16 @@
 "use client";
 
-import { RiPhoneLine, RiMailLine, RiMapPinLine, RiSparklingFill } from "@remixicon/react";
+import { RiPhoneLine, RiMailLine, RiMapPinLine } from "@remixicon/react";
 import Link from "next/link";
+import Image from "next/image";
 
 const services = [
-  { label: "Ev Cam Temizliği", href: "#" },
-  { label: "Ofis Cam Temizliği", href: "#" },
-  { label: "Dış Cephe Temizliği", href: "#" },
-  { label: "Düzenli Temizlik", href: "#" },
+  { label: "Ev Cam Temizliği", href: "/hizmetler" },
+  { label: "Ofis Cam Temizliği", href: "/hizmetler" },
+  { label: "Dış Cephe Temizliği", href: "/hizmetler" },
+  { label: "Düzenli Temizlik", href: "/hizmetler" },
 ];
 
-const info = [
-  { label: "Gizlilik Politikası", href: "#" },
-  { label: "Kullanım Şartları", href: "#" },
-  { label: "Çerez Ayarları", href: "#" },
-];
 
 const socialLinks = [
   {
@@ -59,41 +55,23 @@ export default function Footer() {
   return (
     <footer id="iletisim" className="bg-white pt-16 pb-8">
       <div className="container mx-auto px-6">
-        {/* Newsletter Section */}
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 pb-12 border-b border-gray-200">
-          {/* Logo */}
-          <div className="flex items-center gap-2">
-            <span
-              className="text-3xl font-bold text-[#3D8C40]"
-              style={{ fontFamily: "var(--font-heading)" }}
-            >
-              Fethiye Cam
-            </span>
-            <RiSparklingFill className="w-5 h-5 text-[#3D8C40]" />
-          </div>
-
-          {/* Newsletter Form */}
-          <div className="w-full max-w-xl">
-            <form className="flex flex-col sm:flex-row gap-3">
-              <input
-                type="email"
-                placeholder="E-posta adresiniz"
-                className="flex-1 px-5 py-3 rounded-full border border-gray-300 focus:outline-none focus:border-[#3D8C40] transition-colors w-full sm:w-auto"
-              />
-              <button type="submit" className="btn-primary whitespace-nowrap w-full sm:w-auto">
-                Abone Ol
-              </button>
-            </form>
-            <p className="text-sm text-gray-500 mt-3">
-              Özel temizlik kampanyaları ve güncellemelerden haberdar olun.
-            </p>
-          </div>
+        {/* Logo Section */}
+        <div className="flex justify-center md:justify-start mb-12">
+          <Link href="/">
+            <Image
+              src="/fctlogo.png"
+              alt="Fethiye Cam Temizleme"
+              width={200}
+              height={70}
+              className="h-12 md:h-14 w-auto object-contain"
+            />
+          </Link>
         </div>
 
         {/* Main Footer Content */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10 py-12">
+        <div className="flex flex-col md:flex-row justify-between gap-10 pb-12 border-b border-gray-200">
           {/* Company Info */}
-          <div>
+          <div className="md:max-w-md text-center md:text-left">
             <p className="text-gray-600 leading-relaxed mb-6">
               Fethiye Cam Temizleme olarak, evinizi, ofisinizi veya işyerinizi
               pırıl pırıl camlarla buluşturuyoruz. Hizmetlerimizi yaşam
@@ -101,7 +79,7 @@ export default function Footer() {
             </p>
 
             {/* Social Links */}
-            <div className="flex gap-4">
+            <div className="flex gap-4 justify-center md:justify-start">
               {socialLinks.map((social) => (
                 <a
                   key={social.name}
@@ -115,93 +93,97 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Services */}
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-5">Hizmetler</h4>
-            <ul className="space-y-3">
-              {services.map((service) => (
-                <li key={service.label}>
-                  <Link
-                    href={service.href}
-                    className="text-gray-600 hover:text-[#F5A623] transition-colors"
-                  >
-                    {service.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Right Side - Services and Contact */}
+          <div className="flex flex-col md:flex-row gap-10 md:gap-16">
+            {/* Services */}
+            <div className="text-center md:text-left">
+              <h4 className="font-bold text-gray-900 mb-5" style={{ fontWeight: 700 }}>Hizmetler</h4>
+              <ul className="space-y-3">
+                {services.map((service) => (
+                  <li key={service.label}>
+                    <Link
+                      href={service.href}
+                      className="text-gray-600 hover:text-[#FF7F00] transition-colors"
+                    >
+                      {service.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Info */}
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-5">Bilgi</h4>
-            <ul className="space-y-3">
-              {info.map((item) => (
-                <li key={item.label}>
-                  <Link
-                    href={item.href}
-                    className="text-gray-600 hover:text-[#F5A623] transition-colors"
+            {/* Contact */}
+            <div className="text-center md:text-left">
+              <h4 className="font-bold text-gray-900 mb-5" style={{ fontWeight: 700 }}>İletişim</h4>
+              <ul className="space-y-4">
+                <li>
+                  <a
+                    href="tel:+905301207848"
+                    className="flex items-center gap-3 text-gray-600 hover:text-[#FF7F00] transition-colors justify-center md:justify-start"
                   >
-                    {item.label}
-                  </Link>
+                    <RiPhoneLine className="w-5 h-5 text-[#3D8C40]" />
+                    <span>0530 120 78 48</span>
+                  </a>
                 </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-5">İletişim</h4>
-            <ul className="space-y-4">
-              <li>
-                <a
-                  href="tel:+90XXXXXXXXXX"
-                  className="flex items-center gap-3 text-gray-600 hover:text-[#F5A623] transition-colors"
-                >
-                  <RiPhoneLine className="w-5 h-5 text-[#3D8C40]" />
-                  <span>+90 XXX XXX XX XX</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="mailto:info@fethiyecam.com"
-                  className="flex items-center gap-3 text-gray-600 hover:text-[#F5A623] transition-colors"
-                >
-                  <RiMailLine className="w-5 h-5 text-[#3D8C40]" />
-                  <span>info@fethiyecam.com</span>
-                </a>
-              </li>
-              <li>
-                <div className="flex items-start gap-3 text-gray-600">
-                  <RiMapPinLine className="w-5 h-5 text-[#3D8C40] shrink-0 mt-0.5" />
-                  <span>
-                    Fethiye, Muğla
-                    <br />
-                    Türkiye
-                  </span>
-                </div>
-              </li>
-            </ul>
+                <li>
+                  <a
+                    href="mailto:info@fethiyecam.com"
+                    className="flex items-center gap-3 text-gray-600 hover:text-[#FF7F00] transition-colors justify-center md:justify-start"
+                  >
+                    <RiMailLine className="w-5 h-5 text-[#3D8C40]" />
+                    <span>info@fethiyecam.com</span>
+                  </a>
+                </li>
+                <li>
+                  <div className="flex items-start gap-3 text-gray-600 justify-center md:justify-start">
+                    <RiMapPinLine className="w-5 h-5 text-[#3D8C40] shrink-0 mt-0.5" />
+                    <span>
+                      Tuzla, İnönü Blv. No:1/1 EA
+                      <br />
+                      48300 Fethiye/Muğla
+                    </span>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-gray-200">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-gray-500 text-center md:text-left">
+        <div className="pt-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-500">
+            <p className="text-center md:text-left">
               © 2025 Fethiye Cam Temizleme. Tüm hakları saklıdır.
             </p>
-            <div className="flex flex-wrap gap-4 md:gap-6 justify-center md:justify-end">
-              {info.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className="text-sm text-gray-500 hover:text-[#F5A623] transition-colors whitespace-nowrap"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
+            <p className="text-center md:text-right">
+              <a
+                href="https://www.webcraft.tr/hizmetler"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#FF7F00] transition-colors"
+              >
+                Web tasarım
+              </a>
+              {" ve "}
+              <a
+                href="https://www.webcraft.tr/hizmetler"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#FF7F00] transition-colors"
+              >
+                SEO Optimizasyonu
+              </a>
+              {" "}
+              <a
+                href="https://www.webcraft.tr/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#FF7F00] transition-colors"
+              >
+                WebCraft
+              </a>
+              {" tarafından yapılmıştır."}
+            </p>
           </div>
         </div>
       </div>

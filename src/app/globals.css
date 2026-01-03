@@ -4,8 +4,8 @@
   --color-primary: #3d8c40;
   --color-primary-dark: #2d6930;
   --color-primary-light: #4da650;
-  --color-accent: #f5a623;
-  --color-accent-hover: #e09520;
+  --color-accent: #FF7F00;
+  --color-accent-hover: #E67000;
   --color-cream: #f9f7f4;
   --color-cream-dark: #ede9e3;
   --color-white: #ffffff;
@@ -80,7 +80,7 @@ h2 {
 .btn-primary:hover {
   background-color: var(--color-accent-hover);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(245, 166, 35, 0.4);
+  box-shadow: 0 4px 12px rgba(255, 127, 0, 0.4);
 }
 
 /* Secondary Button */

@@ -43,7 +43,7 @@ export default function Tips() {
           {tips.map((tip, index) => (
             <Link
               key={index}
-              href="#"
+              href="/blog"
               className={`blog-card block ${
                 tip.featured ? "md:row-span-1" : ""
               }`}
@@ -66,7 +66,7 @@ export default function Tips() {
                 {tip.featured && (
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
                     <span
-                      className="text-[#F5A623] text-sm italic mb-2"
+                      className="text-[#FF7F00] text-sm italic mb-2"
                       style={{ fontFamily: "var(--font-heading)" }}
                     >
                       {tip.date}
@@ -78,7 +78,7 @@ export default function Tips() {
                       {tip.title}
                     </h3>
                     <div className="mt-4">
-                      <div className="w-10 h-10 rounded-full bg-[#F5A623]/80 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-[#FF7F00]/80 flex items-center justify-center">
                         <RiArrowRightLine className="w-5 h-5 text-white" />
                       </div>
                     </div>
@@ -90,7 +90,7 @@ export default function Tips() {
               {!tip.featured && (
                 <div className="p-5">
                   <span
-                    className="text-[#F5A623] text-sm italic"
+                    className="text-[#FF7F00] text-sm italic"
                     style={{ fontFamily: "var(--font-heading)" }}
                   >
                     {tip.date}
@@ -110,8 +110,8 @@ export default function Tips() {
         {/* Read More Link */}
         <div className="text-center mt-10">
           <Link
-            href="#"
-            className="inline-flex items-center gap-2 text-gray-700 font-medium hover:text-[#F5A623] transition-colors"
+            href="/blog"
+            className="inline-flex items-center gap-2 text-gray-700 font-medium hover:text-[#FF7F00] transition-colors"
           >
             <span>Daha Fazla Oku</span>
             <RiArrowRightLine className="w-4 h-4" />

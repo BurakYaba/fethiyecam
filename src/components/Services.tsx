@@ -170,7 +170,7 @@ export default function Services() {
                             className="inline-flex items-center gap-10 text-white font-medium hover:gap-3 transition-all"
                           >
                             <span>Teklif Al</span>
-                            <div className="w-10 h-10 rounded-full bg-[#F5A623] flex items-center justify-center">
+                            <div className="w-10 h-10 rounded-full bg-[#FF7F00] flex items-center justify-center">
                               <RiArrowRightLine className="w-5 h-5 text-white" />
                             </div>
                           </Link>

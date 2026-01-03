@@ -1,12 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { RiPhoneLine, RiMenuLine, RiCloseLine } from "@remixicon/react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const isContactPage = pathname === "/iletisim";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,12 +20,13 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navLinks = [
-    { href: "/", label: "Ana Sayfa" },
-    { href: "/hakkimizda", label: "Hakkımızda" },
-    { href: "/#hizmetler", label: "Hizmetler" },
-    { href: "/#iletisim", label: "İletişim" },
-  ];
+    const navLinks = [
+      { href: "/", label: "Ana Sayfa" },
+      { href: "/hakkimizda", label: "Hakkımızda" },
+      { href: "/hizmetler", label: "Hizmetler" },
+      { href: "/blog", label: "Blog" },
+      { href: "/iletisim", label: "İletişim" },
+    ];
 
   return (
     <>
@@ -36,14 +41,14 @@ export default function Header() {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link href="/" className="flex items-center">
-              <span
-                className={`text-2xl font-normal transition-colors ${
-                  isScrolled ? "text-[#1a1a1a]" : "text-white"
-                }`}
-                style={{ fontFamily: "var(--font-heading)" }}
-              >
-                Fethiye Cam
-              </span>
+              <Image
+                src="/fctlogo.png"
+                alt="Fethiye Cam Temizleme"
+                width={250}
+                height={90}
+                className="h-12 md:h-14 lg:h-16 w-auto object-contain"
+                priority
+              />
             </Link>
 
             {/* Right Section - Navigation and Buttons */}
@@ -55,15 +60,17 @@ export default function Header() {
                     key={link.href}
                     href={link.href}
                     className={`text-base font-medium transition-colors duration-300 relative group ${
-                      isScrolled ? "text-gray-800" : "text-white"
+                      isScrolled || isContactPage
+                        ? "text-gray-800"
+                        : "text-white"
                     }`}
                     style={{ fontFamily: "var(--font-body)" }}
                   >
                     {link.label}
                     <span
                       className={`absolute bottom-0 left-0 h-px transition-all duration-300 ${
-                        isScrolled
-                          ? "bg-[#F5A623] group-hover:w-full"
+                        isScrolled || isContactPage
+                          ? "bg-[#FF7F00] group-hover:w-full"
                           : "bg-white group-hover:w-full"
                       }`}
                       style={{
@@ -78,14 +85,22 @@ export default function Header() {
               <div className="flex items-center gap-3">
                 {/* Phone Button - Outline Style */}
                 <a
-                  href="tel:+905551234567"
-                  className="btn-header-outline flex items-center gap-2"
+                  href="tel:+905301207848"
+                  className={`btn-header-outline flex items-center gap-2 ${
+                    isContactPage && !isScrolled
+                      ? "!text-[#1a1a1a] [box-shadow:0_0_0_1px_#1a1a1a_inset]"
+                      : ""
+                  }`}
                 >
-                  <RiPhoneLine className="w-4 h-4" />
-                  <span>+90 555 123 45 67</span>
+                  <RiPhoneLine
+                    className={`w-4 h-4 ${
+                      isContactPage && !isScrolled ? "!text-[#1a1a1a]" : ""
+                    }`}
+                  />
+                  <span>0530 120 78 48</span>
                 </a>
                 {/* Request Service Button - Filled Style */}
-                <Link href="#teklif" className="btn-header-filled">
+                <Link href="/iletisim" className="btn-header-filled">
                   Teklif Al
                 </Link>
               </div>
@@ -95,7 +110,7 @@ export default function Header() {
             <button
               onClick={() => setIsMobileMenuOpen(true)}
               className={`lg:hidden p-2 transition-colors ${
-                isScrolled ? "text-gray-800" : "text-white"
+                isScrolled || isContactPage ? "text-gray-800" : "text-white"
               }`}
             >
               <RiMenuLine className="w-6 h-6" />
@@ -120,12 +135,13 @@ export default function Header() {
       >
         <div className="flex flex-col h-full p-6">
           <div className="flex items-center justify-between mb-8">
-            <span
-              className="text-xl font-normal text-[#1a1a1a]"
-              style={{ fontFamily: "var(--font-heading)" }}
-            >
-              Fethiye Cam
-            </span>
+            <Image
+              src="/fctlogo.png"
+              alt="Fethiye Cam Temizleme"
+              width={180}
+              height={60}
+              className="h-12 w-auto object-contain"
+            />
             <button
               onClick={() => setIsMobileMenuOpen(false)}
               className="p-2 text-gray-600 hover:text-gray-900"
@@ -140,7 +156,7 @@ export default function Header() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="text-base font-normal text-gray-800 hover:text-[#F5A623] py-3 border-b border-gray-100 transition-colors"
+                className="text-base font-normal text-gray-800 hover:text-[#FF7F00] py-3 border-b border-gray-100 transition-colors"
                 style={{ fontFamily: "var(--font-body)" }}
               >
                 {link.label}
@@ -150,13 +166,13 @@ export default function Header() {
 
           <div className="mt-auto space-y-3 pt-6">
             <a
-              href="tel:+905551234567"
+              href="tel:+905301207848"
               className="btn-header-outline w-full justify-center"
             >
               <RiPhoneLine className="w-4 h-4" />
-              <span>+90 555 123 45 67</span>
+              <span>0530 120 78 48</span>
             </a>
-            <Link href="#teklif" className="btn-header-filled w-full">
+            <Link href="/iletisim" className="btn-header-filled w-full">
               Teklif Al
             </Link>
           </div>

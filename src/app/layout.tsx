@@ -29,6 +29,11 @@ export const metadata: Metadata = {
   title: "Fethiye Cam Temizleme | Profesyonel Cam Temizlik Hizmetleri",
   description: "Fethiye'de profesyonel cam temizlik hizmetleri. Ev, ofis ve işyeri camlarınız için güvenilir, sigortalı ve garantili temizlik. Ücretsiz teklif alın!",
   keywords: "cam temizleme, fethiye, cam temizlik, pencere temizleme, profesyonel temizlik, cam yıkama",
+  icons: {
+    icon: "/fctlogo.png",
+    shortcut: "/fctlogo.png",
+    apple: "/fctlogo.png",
+  },
   openGraph: {
     title: "Fethiye Cam Temizleme | Profesyonel Cam Temizlik Hizmetleri",
     description: "Fethiye'de profesyonel cam temizlik hizmetleri. Ücretsiz teklif alın!",

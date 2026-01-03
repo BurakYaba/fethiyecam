@@ -104,7 +104,7 @@ export default function HakkimizdaPage() {
           <div className="container mx-auto px-6 relative z-10 py-20">
             <div className="max-w-3xl">
               <span
-                className="text-[#F5A623] text-4xl mb-4 block"
+                className="text-[#FF7F00] text-4xl mb-4 block"
                 style={{
                   fontFamily: "var(--font-caveat)",
                   fontWeight: 700,
@@ -128,7 +128,7 @@ export default function HakkimizdaPage() {
             {/* Top text */}
             <div className="max-w-4xl mb-12">
               <span
-                className="text-[#F5A623] text-4xl mb-4 block"
+                className="text-[#FF7F00] text-4xl mb-4 block"
                 style={{
                   fontFamily: "var(--font-caveat)",
                   fontWeight: 700,
@@ -333,7 +333,7 @@ export default function HakkimizdaPage() {
 
                 {/* Quote with orange marks */}
                 <div className="relative pl-16 mb-8">
-                  <span className="absolute left-0 top-0 text-6xl text-[#F5A623] leading-none font-serif">
+                  <span className="absolute left-0 top-0 text-6xl text-[#FF7F00] leading-none font-serif">
                     "
                   </span>
                   <p
@@ -412,13 +412,13 @@ export default function HakkimizdaPage() {
                     Online Randevu Al
                   </Link>
                   <a
-                    href="tel:+90XXXXXXXXXX"
+                    href="tel:+905301207848"
                     className="inline-flex items-center gap-2 text-gray-900 font-medium"
                   >
-                    <span className="w-10 h-10 rounded-full bg-[#F5A623] flex items-center justify-center">
+                    <span className="w-10 h-10 rounded-full bg-[#FF7F00] flex items-center justify-center">
                       <RiPhoneLine className="w-5 h-5 text-white" />
                     </span>
-                    +90 XXX XXX XX XX
+                    0530 120 78 48
                   </a>
                 </div>
               </div>
@@ -535,7 +535,7 @@ export default function HakkimizdaPage() {
               {testimonials.map((testimonial, index) => (
                 <div key={index} className="bg-white rounded-2xl p-6 shadow-lg">
                   {/* Orange quote */}
-                  <span className="text-4xl text-[#F5A623] font-serif leading-none">
+                  <span className="text-4xl text-[#FF7F00] font-serif leading-none">
                     "
                   </span>
                   <p className="text-gray-700 mb-6 leading-relaxed">
@@ -638,7 +638,7 @@ export default function HakkimizdaPage() {
           <div className="container mx-auto px-6 relative z-20">
             <div className="max-w-3xl mx-auto text-center">
               <span
-                className="text-[#F5A623] text-4xl mb-4 block"
+                className="text-[#FF7F00] text-4xl mb-4 block"
                 style={{
                   fontFamily: "var(--font-caveat)",
                   fontWeight: 700,
@@ -654,7 +654,7 @@ export default function HakkimizdaPage() {
               </h2>
               <Link
                 href="/#teklif"
-                className="inline-block bg-[#F5A623] text-white px-8 py-4 rounded-full font-semibold hover:bg-[#e09520] transition-colors"
+                className="inline-block bg-[#FF7F00] text-white px-8 py-4 rounded-full font-semibold hover:bg-[#E67000] transition-colors"
               >
                 Teklif Al
               </Link>
