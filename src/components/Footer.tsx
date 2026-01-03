@@ -1,6 +1,6 @@
 "use client";
 
-import { Phone, Mail, MapPin, Sparkles } from "lucide-react";
+import { RiPhoneLine, RiMailLine, RiMapPinLine, RiSparklingFill } from "@remixicon/react";
 import Link from "next/link";
 
 const services = [
@@ -69,18 +69,18 @@ export default function Footer() {
             >
               Fethiye Cam
             </span>
-            <Sparkles className="w-5 h-5 text-[#3D8C40]" />
+            <RiSparklingFill className="w-5 h-5 text-[#3D8C40]" />
           </div>
 
           {/* Newsletter Form */}
           <div className="w-full max-w-xl">
-            <form className="flex gap-3">
+            <form className="flex flex-col sm:flex-row gap-3">
               <input
                 type="email"
                 placeholder="E-posta adresiniz"
-                className="flex-1 px-5 py-3 rounded-full border border-gray-300 focus:outline-none focus:border-[#3D8C40] transition-colors"
+                className="flex-1 px-5 py-3 rounded-full border border-gray-300 focus:outline-none focus:border-[#3D8C40] transition-colors w-full sm:w-auto"
               />
-              <button type="submit" className="btn-primary whitespace-nowrap">
+              <button type="submit" className="btn-primary whitespace-nowrap w-full sm:w-auto">
                 Abone Ol
               </button>
             </form>
@@ -158,7 +158,7 @@ export default function Footer() {
                   href="tel:+90XXXXXXXXXX"
                   className="flex items-center gap-3 text-gray-600 hover:text-[#F5A623] transition-colors"
                 >
-                  <Phone className="w-5 h-5 text-[#3D8C40]" />
+                  <RiPhoneLine className="w-5 h-5 text-[#3D8C40]" />
                   <span>+90 XXX XXX XX XX</span>
                 </a>
               </li>
@@ -167,13 +167,13 @@ export default function Footer() {
                   href="mailto:info@fethiyecam.com"
                   className="flex items-center gap-3 text-gray-600 hover:text-[#F5A623] transition-colors"
                 >
-                  <Mail className="w-5 h-5 text-[#3D8C40]" />
+                  <RiMailLine className="w-5 h-5 text-[#3D8C40]" />
                   <span>info@fethiyecam.com</span>
                 </a>
               </li>
               <li>
                 <div className="flex items-start gap-3 text-gray-600">
-                  <MapPin className="w-5 h-5 text-[#3D8C40] flex-shrink-0 mt-0.5" />
+                  <RiMapPinLine className="w-5 h-5 text-[#3D8C40] shrink-0 mt-0.5" />
                   <span>
                     Fethiye, Muğla
                     <br />
@@ -188,15 +188,15 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-gray-200">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 text-center md:text-left">
               © 2025 Fethiye Cam Temizleme. Tüm hakları saklıdır.
             </p>
-            <div className="flex gap-6">
+            <div className="flex flex-wrap gap-4 md:gap-6 justify-center md:justify-end">
               {info.map((item) => (
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="text-sm text-gray-500 hover:text-[#F5A623] transition-colors"
+                  className="text-sm text-gray-500 hover:text-[#F5A623] transition-colors whitespace-nowrap"
                 >
                   {item.label}
                 </Link>

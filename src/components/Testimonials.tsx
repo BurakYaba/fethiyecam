@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { RiStarLine, RiArrowLeftSLine, RiArrowRightSLine } from "@remixicon/react";
 import Image from "next/image";
 
 const testimonials = [
@@ -78,7 +78,7 @@ export default function Testimonials() {
                 {/* Star Rating */}
                 <div className="flex gap-1 mb-6">
                   {Array.from({ length: testimonial.rating }).map((_, i) => (
-                    <Star
+                    <RiStarLine
                       key={i}
                       className="w-5 h-5 text-[#F5A623] fill-[#F5A623]"
                     />
@@ -131,13 +131,13 @@ export default function Testimonials() {
               onClick={prevSlide}
               className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <RiArrowLeftSLine className="w-5 h-5" />
             </button>
             <button
               onClick={nextSlide}
               className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors"
             >
-              <ChevronRight className="w-5 h-5" />
+              <RiArrowRightSLine className="w-5 h-5" />
             </button>
           </div>
         </div>

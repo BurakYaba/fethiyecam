@@ -1,24 +1,24 @@
 "use client";
 
-import { CalendarCheck, ClipboardCheck, Sparkles } from "lucide-react";
+import { RiCalendarLine, RiClipboardLine, RiSparklingFill } from "@remixicon/react";
 import Link from "next/link";
 import Image from "next/image";
 
 const steps = [
   {
-    icon: CalendarCheck,
+    icon: RiCalendarLine,
     title: "Randevu Alın",
     description:
       "Bizi arayın veya iletişim formundan mesaj bırakın. Size en kısa sürede dönüş yapalım.",
   },
   {
-    icon: ClipboardCheck,
+    icon: RiClipboardLine,
     title: "Paketinizi Seçin",
     description:
       "Cam sayısına, metrekareye veya ihtiyaçlarınıza göre özelleştirilmiş paketler sunuyoruz.",
   },
   {
-    icon: Sparkles,
+    icon: RiSparklingFill,
     title: "Biz Temizleriz, Siz Rahatlarsınız",
     description:
       "Profesyonel ekibimiz camlarınızı pırıl pırıl yapar, siz sadece keyfini çıkarın.",

@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckSquare, Star } from "lucide-react";
+import { RiCheckLine, RiStarLine } from "@remixicon/react";
 import Image from "next/image";
 
 const metrics = [
@@ -16,12 +16,13 @@ export default function Satisfaction() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left - Image */}
           <div className="relative">
-            <div className="rounded-3xl overflow-hidden aspect-[4/3] relative">
+            <div className="rounded-3xl overflow-hidden w-full relative">
               <Image
                 src="/images/image_home_02_01.png"
                 alt="Mutlu müşteri"
-                fill
-                className="object-cover"
+                width={800}
+                height={600}
+                className="w-full h-auto object-cover rounded-3xl"
                 sizes="(max-width: 1024px) 100vw, 50vw"
               />
             </div>
@@ -55,7 +56,7 @@ export default function Satisfaction() {
                   }}
                 />
                 <div className="w-12 h-12 rounded-lg bg-[#3D8C40]/10 flex items-center justify-center">
-                  <CheckSquare className="w-6 h-6 text-[#3D8C40]" />
+                  <RiCheckLine className="w-6 h-6 text-[#3D8C40]" />
                 </div>
                 <div>
                   <div
@@ -109,7 +110,7 @@ export default function Satisfaction() {
               </div>
               <div className="flex gap-0.5">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
+                  <RiStarLine
                     key={i}
                     className={`w-5 h-5 ${
                       i < 4

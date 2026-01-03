@@ -2,19 +2,19 @@
 
 import { useState } from "react";
 import {
-  Check,
-  Sparkles,
-  ArrowUpRight,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+  RiCheckLine,
+  RiSparklingFill,
+  RiArrowRightLine,
+  RiArrowLeftSLine,
+  RiArrowRightSLine,
+} from "@remixicon/react";
 import Link from "next/link";
 import Image from "next/image";
 
 const badges = [
-  { icon: Check, text: "Deneyimli ekip" },
-  { icon: Check, text: "Sigortalı hizmet" },
-  { icon: Check, text: "Sözleşme yok" },
+  { icon: RiCheckLine, text: "Deneyimli ekip" },
+  { icon: RiCheckLine, text: "Sigortalı hizmet" },
+  { icon: RiCheckLine, text: "Sözleşme yok" },
 ];
 
 const services = [
@@ -145,7 +145,7 @@ export default function Services() {
                         </div>
 
                         <div className="flex items-center gap-2 mb-4">
-                          <Sparkles className="w-5 h-5" />
+                          <RiSparklingFill className="w-5 h-5" />
                           <span className="font-medium">Neler Dahil?</span>
                         </div>
 
@@ -157,7 +157,7 @@ export default function Services() {
                         <ul className="space-y-3 mb-8">
                           {service.features.map((feature, idx) => (
                             <li key={idx} className="flex items-center gap-3">
-                              <Check className="w-5 h-5 text-white/80" />
+                              <RiCheckLine className="w-5 h-5 text-white/80" />
                               <span className="text-white/90">{feature}</span>
                             </li>
                           ))}
@@ -171,7 +171,7 @@ export default function Services() {
                           >
                             <span>Teklif Al</span>
                             <div className="w-10 h-10 rounded-full bg-[#F5A623] flex items-center justify-center">
-                              <ArrowUpRight className="w-5 h-5 text-white" />
+                              <RiArrowRightLine className="w-5 h-5 text-white" />
                             </div>
                           </Link>
                         </div>
@@ -192,7 +192,7 @@ export default function Services() {
                         </div>
                         {/* Sparkle decoration */}
                         <div className="absolute -bottom-4 -right-4 text-white opacity-50">
-                          <Sparkles className="w-12 h-12" />
+                          <RiSparklingFill className="w-12 h-12" />
                         </div>
                       </div>
                     </div>
@@ -209,7 +209,7 @@ export default function Services() {
               className="w-12 h-12 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center hover:border-[#3D8C40] hover:bg-[#3D8C40] hover:text-white transition-all"
               aria-label="Previous service"
             >
-              <ChevronLeft className="w-6 h-6" />
+              <RiArrowLeftSLine className="w-6 h-6" />
             </button>
 
             {/* Dots Indicator */}
@@ -233,7 +233,7 @@ export default function Services() {
               className="w-12 h-12 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center hover:border-[#3D8C40] hover:bg-[#3D8C40] hover:text-white transition-all"
               aria-label="Next service"
             >
-              <ChevronRight className="w-6 h-6" />
+              <RiArrowRightSLine className="w-6 h-6" />
             </button>
           </div>
         </div>

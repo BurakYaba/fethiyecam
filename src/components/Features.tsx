@@ -1,21 +1,21 @@
-import { ShieldCheck, Award, Heart } from "lucide-react";
+import { RiShieldLine, RiAwardLine, RiHeartLine } from "@remixicon/react";
 import Image from "next/image";
 
 const features = [
   {
-    icon: ShieldCheck,
+    icon: RiShieldLine,
     title: "Güvenilir Firma",
     description:
       "Güvenilirlik üzerine kurulmuş bir şirketiz. Her zaman zamanında gelir ve mekanınıza özenle davranırız.",
   },
   {
-    icon: Award,
+    icon: RiAwardLine,
     title: "Profesyonel Hizmet",
     description:
       "Mükemmel performans, sabit fiyatlar, sürpriz yok. Her temizlik titiz, kişiselleştirilmiş ve dostane destekle sunulur.",
   },
   {
-    icon: Heart,
+    icon: RiHeartLine,
     title: "Müşteri Memnuniyeti",
     description:
       "Açık iletişim, esnek randevu ve memnuniyet garantisi ile her temizlikten sonra mutlu olmanızı sağlıyoruz.",

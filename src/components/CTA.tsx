@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail } from "lucide-react";
+import { RiMailLine } from "@remixicon/react";
 import Image from "next/image";
 
 export default function CTA() {
@@ -106,7 +106,7 @@ export default function CTA() {
                 className="flex items-center gap-3 text-white hover:text-white/80 transition-colors group justify-center lg:justify-end"
               >
                 <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shrink-0">
-                  <Mail className="w-5 h-5 text-[#3D8C40]" />
+                  <RiMailLine className="w-5 h-5 text-[#3D8C40]" />
                 </div>
                 <span className="text-lg group-hover:underline">
                   info@fethiyecam.com

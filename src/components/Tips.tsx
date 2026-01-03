@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { RiArrowRightLine } from "@remixicon/react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -79,7 +79,7 @@ export default function Tips() {
                     </h3>
                     <div className="mt-4">
                       <div className="w-10 h-10 rounded-full bg-[#F5A623]/80 flex items-center justify-center">
-                        <ArrowRight className="w-5 h-5 text-white" />
+                        <RiArrowRightLine className="w-5 h-5 text-white" />
                       </div>
                     </div>
                   </div>
@@ -114,7 +114,7 @@ export default function Tips() {
             className="inline-flex items-center gap-2 text-gray-700 font-medium hover:text-[#F5A623] transition-colors"
           >
             <span>Daha Fazla Oku</span>
-            <ArrowRight className="w-4 h-4" />
+            <RiArrowRightLine className="w-4 h-4" />
           </Link>
         </div>
       </div>

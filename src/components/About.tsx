@@ -1,4 +1,4 @@
-import { CheckSquare, Award, Star } from "lucide-react";
+import { RiCheckLine, RiStarLine } from "@remixicon/react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -9,12 +9,13 @@ export default function About() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left - Image */}
           <div className="relative">
-            <div className="relative rounded-3xl overflow-hidden aspect-[4/3]">
+            <div className="relative rounded-3xl overflow-hidden w-full">
               <Image
                 src="/images/image_home_02_02.png"
                 alt="Profesyonel cam temizlik ekibi"
-                fill
-                className="object-cover"
+                width={800}
+                height={600}
+                className="w-full h-auto object-cover rounded-3xl"
                 sizes="(max-width: 1024px) 100vw, 50vw"
               />
 
@@ -26,7 +27,7 @@ export default function About() {
             {/* Stats Badge */}
             <div className="absolute -bottom-4 -right-4 bg-cream rounded-2xl  p-5 flex items-center gap-4">
               <div className="w-12 h-12 rounded-lg bg-[#3D8C40]/10 flex items-center justify-center">
-                <CheckSquare className="w-6 h-6 text-[#3D8C40]" />
+                <RiCheckLine className="w-6 h-6 text-[#3D8C40]" />
               </div>
               <div>
                 <div
@@ -60,12 +61,12 @@ export default function About() {
 
             {/* Award Badge */}
             <div className="flex items-center gap-4 mb-8 p-4 bg-white rounded-2xl shadow-sm">
-              <div className="relative w-20 h-20 flex-shrink-0">
+              <div className="relative w-20 h-20 shrink-0">
                 <div className="absolute inset-0 bg-[#3D8C40] rounded-xl flex flex-col items-center justify-center text-white">
                   <div className="flex gap-0.5 mb-1">
-                    <Star className="w-3 h-3 fill-current" />
-                    <Star className="w-3 h-3 fill-current" />
-                    <Star className="w-3 h-3 fill-current" />
+                    <RiStarLine className="w-3 h-3 fill-current" />
+                    <RiStarLine className="w-3 h-3 fill-current" />
+                    <RiStarLine className="w-3 h-3 fill-current" />
                   </div>
                   <span className="text-xl font-bold">2024</span>
                   <span className="text-[8px] uppercase tracking-wider">

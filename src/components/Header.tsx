@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Phone, Menu, X } from "lucide-react";
+import { RiPhoneLine, RiMenuLine, RiCloseLine } from "@remixicon/react";
 import Link from "next/link";
 
 export default function Header() {
@@ -17,10 +17,10 @@ export default function Header() {
   }, []);
 
   const navLinks = [
-    { href: "#anasayfa", label: "Ana Sayfa" },
-    { href: "#hakkimizda", label: "Hakkımızda" },
-    { href: "#hizmetler", label: "Hizmetler" },
-    { href: "#iletisim", label: "İletişim" },
+    { href: "/", label: "Ana Sayfa" },
+    { href: "/hakkimizda", label: "Hakkımızda" },
+    { href: "/#hizmetler", label: "Hizmetler" },
+    { href: "/#iletisim", label: "İletişim" },
   ];
 
   return (
@@ -81,7 +81,7 @@ export default function Header() {
                   href="tel:+905551234567"
                   className="btn-header-outline flex items-center gap-2"
                 >
-                  <Phone className="w-4 h-4" />
+                  <RiPhoneLine className="w-4 h-4" />
                   <span>+90 555 123 45 67</span>
                 </a>
                 {/* Request Service Button - Filled Style */}
@@ -98,7 +98,7 @@ export default function Header() {
                 isScrolled ? "text-gray-800" : "text-white"
               }`}
             >
-              <Menu className="w-6 h-6" />
+              <RiMenuLine className="w-6 h-6" />
             </button>
           </div>
         </div>
@@ -130,7 +130,7 @@ export default function Header() {
               onClick={() => setIsMobileMenuOpen(false)}
               className="p-2 text-gray-600 hover:text-gray-900"
             >
-              <X className="w-6 h-6" />
+              <RiCloseLine className="w-6 h-6" />
             </button>
           </div>
 
@@ -153,7 +153,7 @@ export default function Header() {
               href="tel:+905551234567"
               className="btn-header-outline w-full justify-center"
             >
-              <Phone className="w-4 h-4" />
+              <RiPhoneLine className="w-4 h-4" />
               <span>+90 555 123 45 67</span>
             </a>
             <Link href="#teklif" className="btn-header-filled w-full">

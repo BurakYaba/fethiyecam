@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
+import { RiSparklingFill } from "@remixicon/react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -48,7 +48,7 @@ export default function Hero() {
             className="btn-primary text-lg px-10 py-4 inline-flex items-center gap-2"
           >
             <span>Ücretsiz Teklif Al</span>
-            <Sparkles className="w-5 h-5" />
+            <RiSparklingFill className="w-5 h-5" />
           </Link>
         </div>
 
