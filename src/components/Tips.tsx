@@ -1,7 +1,6 @@
-"use client";
-
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 const tips = [
   {
@@ -52,14 +51,15 @@ export default function Tips() {
               <div
                 className={`relative overflow-hidden ${
                   tip.featured ? "h-full" : ""
-                }`}
+                } ${tip.featured ? "h-64 md:h-full" : "h-48"}`}
               >
-                <img
+                <Image
                   src={tip.image}
                   alt={tip.title}
-                  className={`w-full object-cover ${
-                    tip.featured ? "h-64 md:h-full" : "h-48"
-                  }`}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  loading="lazy"
                 />
 
                 {/* Overlay for featured */}

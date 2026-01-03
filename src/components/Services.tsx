@@ -9,6 +9,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 const badges = [
   { icon: Check, text: "Deneyimli ekip" },
@@ -178,11 +179,15 @@ export default function Services() {
 
                       {/* Right Image */}
                       <div className="relative">
-                        <div className="rounded-2xl overflow-hidden aspect-3/2">
-                          <img
+                        <div className="rounded-2xl overflow-hidden aspect-3/2 relative">
+                          <Image
                             src={service.image}
                             alt={service.title}
-                            className="w-full h-full object-contain"
+                            fill
+                            className="object-contain"
+                            sizes="(max-width: 768px) 100vw, 50vw"
+                            priority={service.id === 1}
+                            loading={service.id === 1 ? undefined : "lazy"}
                           />
                         </div>
                         {/* Sparkle decoration */}

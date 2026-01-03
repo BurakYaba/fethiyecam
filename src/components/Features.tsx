@@ -1,6 +1,5 @@
-"use client";
-
 import { ShieldCheck, Award, Heart } from "lucide-react";
+import Image from "next/image";
 
 const features = [
   {
@@ -59,11 +58,14 @@ export default function Features() {
             </div>
 
             {/* Decorative Image */}
-            <div className="absolute bottom-0 right-0 w-32 h-32 opacity-90">
-              <img
+            <div className="absolute bottom-0 right-0 w-32 h-32 opacity-90 relative">
+              <Image
                 src="/images/green_glove_02.png"
                 alt="Temizlik"
-                className="w-full h-full object-cover rounded-tl-3xl"
+                fill
+                className="object-cover rounded-tl-3xl"
+                sizes="128px"
+                loading="lazy"
               />
             </div>
 

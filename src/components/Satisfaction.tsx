@@ -1,6 +1,7 @@
 "use client";
 
 import { CheckSquare, Star } from "lucide-react";
+import Image from "next/image";
 
 const metrics = [
   { label: "Ekibimizin dakikliği", value: 96 },
@@ -15,16 +16,18 @@ export default function Satisfaction() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left - Image */}
           <div className="relative">
-            <div className="rounded-3xl overflow-hidden">
-              <img
+            <div className="rounded-3xl overflow-hidden aspect-[4/3] relative">
+              <Image
                 src="/images/image_home_02_01.png"
                 alt="Mutlu müşteri"
-                className="w-full h-auto object-cover"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
               />
             </div>
 
             {/* Satisfaction Badge */}
-            <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 md:left-auto md:-right-2 md:translate-x-0">
+            <div className="absolute -bottom-4 -right-4">
               <div
                 className="bg-cream p-5 flex items-center gap-4 relative"
                 style={{
@@ -68,7 +71,7 @@ export default function Satisfaction() {
           </div>
 
           {/* Right - Content */}
-          <div>
+          <div className="text-center md:text-left">
             <span className="section-label">Memnuniyet Anketi</span>
             <h2
               className="text-4xl md:text-5xl text-gray-900 mb-6"
@@ -78,7 +81,7 @@ export default function Satisfaction() {
             </h2>
 
             {/* Google Rating */}
-            <div className="flex items-center gap-3 mb-8">
+            <div className="flex items-center justify-center md:justify-start gap-3 mb-8">
               <div className="w-6 h-6 bg-cream rounded flex items-center justify-center overflow-hidden">
                 <svg
                   width="20"
@@ -140,7 +143,7 @@ export default function Satisfaction() {
             </div>
 
             {/* Note */}
-            <p className="text-sm text-gray-500 mt-6">
+            <p className="text-sm text-gray-500 mt-6 text-center md:text-left">
               *Müşteri memnuniyet anketi 298 yanıta dayanmaktadır.
             </p>
           </div>

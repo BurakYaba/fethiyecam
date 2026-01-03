@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
+import Image from "next/image";
 
 const testimonials = [
   {
@@ -86,10 +87,14 @@ export default function Testimonials() {
 
                 {/* Author */}
                 <div className="flex items-center gap-4">
-                  <img
+                  <Image
                     src={testimonial.avatar}
                     alt={testimonial.name}
+                    width={48}
+                    height={48}
                     className="w-12 h-12 rounded-full object-cover"
+                    sizes="48px"
+                    loading="lazy"
                   />
                   <div>
                     <div className="font-semibold text-gray-900">

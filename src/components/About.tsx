@@ -1,7 +1,6 @@
-"use client";
-
 import { CheckSquare, Award, Star } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function About() {
   return (
@@ -10,11 +9,13 @@ export default function About() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left - Image */}
           <div className="relative">
-            <div className="relative rounded-3xl overflow-hidden">
-              <img
+            <div className="relative rounded-3xl overflow-hidden aspect-[4/3]">
+              <Image
                 src="/images/image_home_02_02.png"
                 alt="Profesyonel cam temizlik ekibi"
-                className="w-full h-auto object-cover"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
               />
 
               {/* Decorative frame */}
@@ -23,7 +24,7 @@ export default function About() {
             </div>
 
             {/* Stats Badge */}
-            <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:-bottom-4 md:-right-4 bg-cream rounded-2xl  p-5 flex items-center gap-4">
+            <div className="absolute -bottom-4 -right-4 bg-cream rounded-2xl  p-5 flex items-center gap-4">
               <div className="w-12 h-12 rounded-lg bg-[#3D8C40]/10 flex items-center justify-center">
                 <CheckSquare className="w-6 h-6 text-[#3D8C40]" />
               </div>
@@ -86,9 +87,11 @@ export default function About() {
             </div>
 
             {/* CTA */}
-            <Link href="#teklif" className="btn-primary">
-              Hemen Randevu Al
-            </Link>
+            <div className="flex justify-center md:justify-start">
+              <Link href="#teklif" className="btn-primary">
+                Hemen Randevu Al
+              </Link>
+            </div>
           </div>
         </div>
       </div>

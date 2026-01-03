@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import HowItWorks from "@/components/HowItWorks";
@@ -5,11 +6,21 @@ import Services from "@/components/Services";
 import About from "@/components/About";
 import Features from "@/components/Features";
 import Satisfaction from "@/components/Satisfaction";
-import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
-import Tips from "@/components/Tips";
-import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
+
+// Dynamic imports for below-fold components
+const Testimonials = dynamic(() => import("@/components/Testimonials"), {
+  loading: () => <div className="section-padding" />,
+});
+
+const Tips = dynamic(() => import("@/components/Tips"), {
+  loading: () => <div className="section-padding bg-cream" />,
+});
+
+const CTA = dynamic(() => import("@/components/CTA"), {
+  loading: () => <div className="section-padding bg-cream" />,
+});
 
 export default function Home() {
   return (

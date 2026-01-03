@@ -34,7 +34,9 @@ export default function HowItWorks() {
           <span className="section-label">Nasıl Çalışıyoruz</span>
           <h2
             className="text-4xl md:text-5xl text-gray-900"
-            style={{ fontFamily: "var(--font-heading)" }}
+            style={{
+              fontFamily: "var(--font-heading)",
+            }}
           >
             Adım Adım Kullanım Kılavuzu
           </h2>
@@ -75,7 +77,8 @@ export default function HowItWorks() {
               height={200}
               className="w-[100px] h-[40px] animate-float"
               style={{ animationDuration: "3s" }}
-              unoptimized
+              loading="lazy"
+              sizes="100px"
             />
           </div>
 
@@ -88,7 +91,8 @@ export default function HowItWorks() {
               height={200}
               className="w-[100px] h-[40px] animate-float"
               style={{ animationDuration: "3s", animationDelay: "0.5s" }}
-              unoptimized
+              loading="lazy"
+              sizes="100px"
             />
           </div>
         </div>

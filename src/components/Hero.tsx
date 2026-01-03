@@ -2,6 +2,7 @@
 
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Hero() {
   return (
@@ -10,12 +11,16 @@ export default function Hero() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
       {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `url('/images/hero_image_02.jpg')`,
-        }}
-      >
+      <div className="absolute inset-0">
+        <Image
+          src="/images/hero_image_02.jpg"
+          alt="Fethiye Cam Temizleme"
+          fill
+          priority
+          quality={90}
+          sizes="100vw"
+          className="object-cover"
+        />
         {/* Overlay */}
         <div className="absolute inset-0 bg-black/30" />
       </div>

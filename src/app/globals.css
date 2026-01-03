@@ -44,6 +44,10 @@ h6 {
   line-height: 1.2;
 }
 
+h2 {
+  font-weight: 600 !important;
+}
+
 /* Section Label - Caveat font with bold weight */
 .section-label {
   font-family: var(--font-caveat), cursive;
