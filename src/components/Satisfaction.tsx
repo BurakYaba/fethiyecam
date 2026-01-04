@@ -15,7 +15,7 @@ export default function Satisfaction() {
       <div className="container mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left - Image */}
-          <div className="relative">
+          <div className="relative overflow-hidden">
             <div className="rounded-3xl overflow-hidden w-full relative">
               <Image
                 src="/images/image_home_02_01.png"
@@ -28,33 +28,13 @@ export default function Satisfaction() {
             </div>
 
             {/* Satisfaction Badge */}
-            <div className="absolute -bottom-4 -right-4">
+            <div className="absolute bottom-0 right-0 md:-bottom-4 md:-right-4">
               <div
                 className="bg-cream p-5 flex items-center gap-4 relative"
                 style={{
                   borderRadius: "1.5rem 0 1.5rem 0",
                 }}
               >
-                {/* Top-right inverted corner */}
-                <div
-                  className="absolute top-0 right-0 w-6 h-6"
-                  style={{
-                    borderBottomLeftRadius: "1.5rem",
-                    boxShadow: "-8px 8px 0 0 var(--color-cream)",
-                    transform: "translate(100%, 0)",
-                    backgroundColor: "transparent",
-                  }}
-                />
-                {/* Bottom-left inverted corner */}
-                <div
-                  className="absolute bottom-0 left-0 w-6 h-6"
-                  style={{
-                    borderTopRightRadius: "1.5rem",
-                    boxShadow: "8px -8px 0 0 var(--color-cream)",
-                    transform: "translate(-100%, 0)",
-                    backgroundColor: "transparent",
-                  }}
-                />
                 <div className="w-12 h-12 rounded-lg bg-[#3D8C40]/10 flex items-center justify-center">
                   <RiCheckLine className="w-6 h-6 text-[#3D8C40]" />
                 </div>

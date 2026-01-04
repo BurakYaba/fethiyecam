@@ -85,18 +85,6 @@ export default function Features() {
           </div>
         </div>
       </div>
-
-      {/* Decorative Timeline Bar */}
-      <div className="mt-16 overflow-hidden">
-        <div className="h-2 bg-[#3D8C40] flex">
-          {Array.from({ length: 50 }).map((_, i) => (
-            <div
-              key={i}
-              className="flex-1 border-r border-[#2d6930] last:border-r-0"
-            />
-          ))}
-        </div>
-      </div>
     </section>
   );
 }
