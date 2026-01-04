@@ -41,7 +41,7 @@ export default function FAQ() {
               />
             </div>
           </div>
-          <Link href="#iletisim" className="btn-primary">
+          <Link href="/sss" className="btn-primary">
             SSS Sayfamızı Görün
           </Link>
         </div>

@@ -241,7 +241,7 @@ export default function HizmetlerPage() {
                             {/* CTA */}
                             <div className="flex items-center gap-4">
                               <Link
-                                href="#teklif"
+                                href="/iletisim"
                                 className="inline-flex items-center gap-10 text-white font-medium hover:gap-3 transition-all"
                               >
                                 <span>Teklif Al</span>
@@ -410,7 +410,7 @@ export default function HizmetlerPage() {
 
             {/* CTA */}
             <div className="flex flex-col items-center mt-12">
-              <Link href="#teklif" className="btn-primary">
+              <Link href="/iletisim" className="btn-primary">
                 Hemen Başlayın
               </Link>
             </div>

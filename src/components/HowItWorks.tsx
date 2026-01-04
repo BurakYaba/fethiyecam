@@ -99,7 +99,7 @@ export default function HowItWorks() {
 
         {/* CTA */}
         <div className="flex flex-col items-center mt-12">
-          <Link href="#teklif" className="btn-primary">
+          <Link href="/iletisim" className="btn-primary">
             Hemen Başlayın
           </Link>
         </div>

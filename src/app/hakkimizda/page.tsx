@@ -408,7 +408,7 @@ export default function HakkimizdaPage() {
                 </ul>
 
                 <div className="flex flex-wrap gap-4">
-                  <Link href="/#teklif" className="btn-primary">
+                  <Link href="/iletisim" className="btn-primary">
                     Online Randevu Al
                   </Link>
                   <a
@@ -653,7 +653,7 @@ export default function HakkimizdaPage() {
                 Ücretsiz teklif almak için bugün bizimle iletişime geçin.
               </h2>
               <Link
-                href="/#teklif"
+                href="/iletisim"
                 className="inline-block bg-[#FF7F00] text-white px-8 py-4 rounded-full font-semibold hover:bg-[#E67000] transition-colors"
               >
                 Teklif Al

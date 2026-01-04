@@ -166,7 +166,7 @@ export default function Services() {
                         {/* CTA */}
                         <div className="flex items-center gap-4">
                           <Link
-                            href="#teklif"
+                            href="/iletisim"
                             className="inline-flex items-center gap-10 text-white font-medium hover:gap-3 transition-all"
                           >
                             <span>Teklif Al</span>

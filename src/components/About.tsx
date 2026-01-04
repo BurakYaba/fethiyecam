@@ -89,7 +89,7 @@ export default function About() {
 
             {/* CTA */}
             <div className="flex justify-center md:justify-start">
-              <Link href="#teklif" className="btn-primary">
+              <Link href="/iletisim" className="btn-primary">
                 Hemen Randevu Al
               </Link>
             </div>

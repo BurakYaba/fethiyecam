@@ -44,7 +44,7 @@ export default function Hero() {
         {/* CTA Button */}
         <div className="animate-fade-in" style={{ animationDelay: "0.4s" }}>
           <Link
-            href="#teklif"
+            href="/iletisim"
             className="btn-primary text-lg px-10 py-4 inline-flex items-center gap-2"
           >
             <span>Ücretsiz Teklif Al</span>
