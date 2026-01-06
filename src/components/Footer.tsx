@@ -59,7 +59,7 @@ export default function Footer() {
         <div className="flex justify-center md:justify-start mb-12">
           <Link href="/">
             <Image
-              src="/fctlogo.png"
+              src="/Fethiye.png"
               alt="Fethiye Cam Temizleme"
               width={200}
               height={70}

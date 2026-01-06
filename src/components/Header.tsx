@@ -43,7 +43,7 @@ export default function Header() {
             {/* Logo */}
             <Link href="/" className="flex items-center">
               <Image
-                src="/fethiye.png"
+                src="/Fethiye.png"
                 alt="Fethiye Cam Temizleme"
                 width={250}
                 height={90}
@@ -137,7 +137,7 @@ export default function Header() {
         <div className="flex flex-col h-full p-6">
           <div className="flex items-center justify-between mb-8">
             <Image
-              src="/fethiye.png"
+              src="/Fethiye.png"
               alt="Fethiye Cam Temizleme"
               width={240}
               height={60}
