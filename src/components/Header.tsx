@@ -20,14 +20,14 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-    const navLinks = [
-      { href: "/", label: "Ana Sayfa" },
-      { href: "/hakkimizda", label: "Hakkımızda" },
-      { href: "/hizmetler", label: "Hizmetler" },
-      { href: "/blog", label: "Blog" },
-      { href: "/sss", label: "SSS" },
-      { href: "/iletisim", label: "İletişim" },
-    ];
+  const navLinks = [
+    { href: "/", label: "Ana Sayfa" },
+    { href: "/hakkimizda", label: "Hakkımızda" },
+    { href: "/hizmetler", label: "Hizmetler" },
+    { href: "/blog", label: "Blog" },
+    { href: "/sss", label: "SSS" },
+    { href: "/iletisim", label: "İletişim" },
+  ];
 
   return (
     <>
@@ -43,11 +43,11 @@ export default function Header() {
             {/* Logo */}
             <Link href="/" className="flex items-center">
               <Image
-                src="/fctlogo.png"
+                src="/fethiye.png"
                 alt="Fethiye Cam Temizleme"
                 width={250}
                 height={90}
-                className="h-12 md:h-14 lg:h-16 w-auto object-contain"
+                className="h-14 md:h-16 lg:h-18 w-auto object-contain"
                 priority
               />
             </Link>
@@ -137,11 +137,11 @@ export default function Header() {
         <div className="flex flex-col h-full p-6">
           <div className="flex items-center justify-between mb-8">
             <Image
-              src="/fctlogo.png"
+              src="/fethiye.png"
               alt="Fethiye Cam Temizleme"
-              width={180}
+              width={240}
               height={60}
-              className="h-12 w-auto object-contain"
+              className="h-14 w-auto object-contain"
             />
             <button
               onClick={() => setIsMobileMenuOpen(false)}
