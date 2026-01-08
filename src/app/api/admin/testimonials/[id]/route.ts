@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic'
+
 const testimonialSchema = z.object({
   quote: z.string().min(1),
   name: z.string().min(1),

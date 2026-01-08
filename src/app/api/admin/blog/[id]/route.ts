@@ -5,6 +5,8 @@ import { db } from '@/lib/db'
 import { z } from 'zod'
 import { generateSlug } from '@/lib/utils'
 
+export const dynamic = 'force-dynamic'
+
 const blogPostSchema = z.object({
   title: z.string().min(1, 'Başlık gereklidir'),
   slug: z.string().optional(),

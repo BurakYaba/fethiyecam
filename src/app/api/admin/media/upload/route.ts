@@ -6,6 +6,8 @@ import { optimizeImage } from '@/lib/image-optimizer'
 import { uploadToBlob } from '@/lib/blob'
 import sharp from 'sharp'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)

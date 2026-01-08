@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic'
+
 const albumSchema = z.object({
   title: z.string().min(1, 'Başlık gereklidir'),
   coverImageId: z.string().nullable().optional(),
