@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Image from "next/image";
@@ -13,83 +13,24 @@ import {
   RiMailLine,
 } from "@remixicon/react";
 
-const faqs = [
-  {
-    id: 1,
-    question: "Cam temizliği hizmetiniz ne kadar sürer?",
-    answer:
-      "Temizlik süresi, cam sayısına, mekanın büyüklüğüne ve temizlik türüne göre değişir. Genellikle bir ev için 1-3 saat, ofis için 2-4 saat arasında sürmektedir. Detaylı bir süre tahmini için ücretsiz keşif yapıyoruz.",
-  },
-  {
-    id: 2,
-    question: "Hangi bölgelerde hizmet veriyorsunuz?",
-    answer:
-      "Fethiye ve çevresindeki tüm bölgelerde hizmet veriyoruz. Özel durumlar için lütfen bizimle iletişime geçin, size en uygun çözümü sunalım.",
-  },
-  {
-    id: 3,
-    question: "Fiyatlarınız nasıl belirleniyor?",
-    answer:
-      "Fiyatlarımız cam sayısı, mekanın büyüklüğü, temizlik türü ve erişim zorluğuna göre belirlenir. Şeffaf fiyatlandırma politikamız sayesinde hiçbir sürpriz yok. Ücretsiz keşif sonrası net bir fiyat teklifi sunuyoruz.",
-  },
-  {
-    id: 4,
-    question: "Sigortalı hizmet veriyor musunuz?",
-    answer:
-      "Evet, tüm hizmetlerimiz sigortalıdır. Çalışma sırasında oluşabilecek herhangi bir hasar durumunda sigortamız devreye girer. Güvenli ve garantili hizmet sunuyoruz.",
-  },
-  {
-    id: 5,
-    question: "Randevu nasıl alabilirim?",
-    answer:
-      "Randevu almak için bizi telefon ile arayabilir (0530 120 78 48), iletişim formumuzu doldurabilir veya WhatsApp üzerinden mesaj gönderebilirsiniz. Size en kısa sürede dönüş yapacağız.",
-  },
-  {
-    id: 6,
-    question: "Düzenli temizlik hizmeti sunuyor musunuz?",
-    answer:
-      "Evet, haftalık, aylık veya üç aylık düzenli bakım programları sunuyoruz. Düzenli hizmet alan müşterilerimize özel indirimli paket fiyatları sunuyoruz.",
-  },
-  {
-    id: 7,
-    question: "Hangi temizlik malzemelerini kullanıyorsunuz?",
-    answer:
-      "Çevre dostu, çocuklar ve evcil hayvanlar için güvenli, profesyonel temizlik malzemeleri kullanıyoruz. Tüm ürünlerimiz cam yüzeylere zarar vermeyecek şekilde seçilmiştir.",
-  },
-  {
-    id: 8,
-    question: "Yüksek bina cam temizliği yapıyor musunuz?",
-    answer:
-      "Evet, özel platform ve güvenlik ekipmanları ile yüksek binaların cam temizliğini yapıyoruz. Ekibimiz güvenlik sertifikalı ve sigortalıdır.",
-  },
-  {
-    id: 9,
-    question: "Temizlik sonrası memnun kalmazsam ne olur?",
-    answer:
-      "Memnuniyet garantisi sunuyoruz. Eğer temizlik sonrası herhangi bir sorun yaşarsanız, ücretsiz olarak tekrar temizlik yapıyoruz. Müşteri memnuniyeti bizim önceliğimizdir.",
-  },
-  {
-    id: 10,
-    question: "Ödeme nasıl yapılır?",
-    answer:
-      "Nakit, kredi kartı veya banka havalesi ile ödeme yapabilirsiniz. Ödeme genellikle temizlik tamamlandıktan sonra yapılır. Kurumsal müşterilerimiz için fatura kesiyoruz.",
-  },
-  {
-    id: 11,
-    question: "Acil durumlarda hizmet veriyor musunuz?",
-    answer:
-      "Evet, acil durumlar için esnek çalışma saatlerimiz vardır. Müsaitliğimize göre aynı gün veya ertesi gün hizmet verebiliriz. Lütfen bizimle iletişime geçin.",
-  },
-  {
-    id: 12,
-    question: "Evcil hayvanlarım varsa sorun olur mu?",
-    answer:
-      "Hayır, hiçbir sorun olmaz. Kullandığımız temizlik ürünleri evcil hayvanlar için güvenlidir. Çalışma sırasında evcil hayvanlarınızın güvenliği için gerekli önlemleri alıyoruz.",
-  },
-];
-
 export default function SSSPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [faqs, setFaqs] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchFAQs = async () => {
+      try {
+        const response = await fetch('/api/faq');
+        if (response.ok) {
+          const data = await response.json();
+          setFaqs(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch FAQs:', error);
+      }
+    };
+    fetchFAQs();
+  }, []);
 
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -191,7 +132,7 @@ export default function SSSPage() {
                     }`}
                   >
                     <div className="px-6 pb-5 pl-[72px]">
-                      <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
+                      <div className="text-gray-600 leading-relaxed" dangerouslySetInnerHTML={{ __html: faq.answer }} />
                     </div>
                   </div>
                 </div>

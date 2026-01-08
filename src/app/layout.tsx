@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Inter_Tight, Caveat } from "next/font/google";
 import "./globals.css";
+import { Providers } from "./providers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -50,7 +51,7 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body className={`${inter.variable} ${interTight.variable} ${caveat.variable} antialiased`}>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

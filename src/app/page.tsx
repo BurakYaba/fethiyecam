@@ -10,6 +10,10 @@ import FAQ from "@/components/FAQ";
 import Footer from "@/components/Footer";
 
 // Dynamic imports for below-fold components
+const Gallery = dynamic(() => import("@/components/Gallery"), {
+  loading: () => <div className="section-padding bg-cream" />,
+});
+
 const Testimonials = dynamic(() => import("@/components/Testimonials"), {
   loading: () => <div className="section-padding" />,
 });
@@ -33,6 +37,7 @@ export default function Home() {
         <About />
         <Features />
         <Satisfaction />
+        <Gallery />
         <Testimonials />
         <FAQ />
         <Tips />

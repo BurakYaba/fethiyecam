@@ -1,55 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { RiStarLine, RiArrowLeftSLine, RiArrowRightSLine } from "@remixicon/react";
 import Image from "next/image";
 
-const testimonials = [
-  {
-    quote:
-      "Harika bir hizmet! Ekip zamanında geldi ve işi çok hızlı tamamladı. Camlarımız hiç bu kadar temiz olmamıştı. Herkese tavsiye ediyorum.",
-    name: "Ayşe Yılmaz",
-    role: "Müşteri",
-    avatar: "/images/testimonials_01.jpg",
-    rating: 5,
-  },
-  {
-    quote:
-      "Fethiye'de cam temizliği için en iyi seçenek! Profesyonel ekipmanlarla çalışıyorlar ve sonuç mükemmel. Çok memnun kaldım.",
-    name: "Mehmet Kaya",
-    role: "Müşteri",
-    avatar: "/images/testimonials_02.jpg",
-    rating: 5,
-  },
-  {
-    quote:
-      "Ofisimizin camlarını düzenli olarak temizletiyoruz. Her seferinde aynı kalitede hizmet alıyoruz. Güvenilir ve profesyonel bir ekip.",
-    name: "Fatma Demir",
-    role: "Müşteri",
-    avatar: "/images/testimonials_03.jpg",
-    rating: 5,
-  },
-  {
-    quote:
-      "Yüksek binamızın dış cephe camlarını temizlediler. İşlerini çok güvenli ve profesyonel bir şekilde yaptılar. Teşekkürler!",
-    name: "Ali Özkan",
-    role: "Müşteri",
-    avatar: "/images/testimonials_04.jpg",
-    rating: 5,
-  },
-];
-
 export default function Testimonials() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [testimonials, setTestimonials] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const response = await fetch('/api/testimonials');
+        if (response.ok) {
+          const data = await response.json();
+          setTestimonials(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch testimonials:', error);
+      }
+    };
+    fetchTestimonials();
+  }, []);
 
   const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % (testimonials.length - 1));
+    if (testimonials.length > 0) {
+      setCurrentIndex((prev) => (prev + 1) % (testimonials.length - 1));
+    }
   };
 
   const prevSlide = () => {
-    setCurrentIndex(
-      (prev) => (prev - 1 + testimonials.length - 1) % (testimonials.length - 1)
-    );
+    if (testimonials.length > 0) {
+      setCurrentIndex(
+        (prev) => (prev - 1 + testimonials.length - 1) % (testimonials.length - 1)
+      );
+    }
   };
 
   return (
@@ -88,7 +73,7 @@ export default function Testimonials() {
                 {/* Author */}
                 <div className="flex items-center gap-4">
                   <Image
-                    src={testimonial.avatar}
+                    src={testimonial.avatar?.url || "/images/testimonials_01.jpg"}
                     alt={testimonial.name}
                     width={48}
                     height={48}
@@ -114,7 +99,7 @@ export default function Testimonials() {
         <div className="flex items-center justify-between mt-8">
           {/* Dots */}
           <div className="flex gap-2">
-            {Array.from({ length: testimonials.length - 1 }).map((_, i) => (
+            {testimonials.length > 0 && Array.from({ length: testimonials.length - 1 }).map((_, i) => (
               <button
                 key={i}
                 onClick={() => setCurrentIndex(i)}
