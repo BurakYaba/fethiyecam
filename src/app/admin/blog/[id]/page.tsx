@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import ImageUpload from '@/components/admin/ImageUpload'
+import ImageUpload, { ImageUploadRef } from '@/components/admin/ImageUpload'
 import RichTextEditor from '@/components/admin/RichTextEditor'
 import { RiArrowLeftLine, RiSaveLine } from '@remixicon/react'
 import Link from 'next/link'
@@ -14,14 +14,13 @@ export default function EditBlogPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
-  const imageFileRef = useRef<File | null>(null)
+  const imageUploadRef = useRef<ImageUploadRef>(null)
   const [formData, setFormData] = useState({
     title: '',
     excerpt: '',
     content: '',
     imageId: null as string | null,
     imageUrl: null as string | null,
-    imageFile: null as File | null,
     featured: false,
     publishedAt: '',
   })
@@ -40,7 +39,6 @@ export default function EditBlogPage() {
           content: post.content || '',
           imageId: post.imageId,
           imageUrl: post.image?.url || null,
-          imageFile: null,
           featured: post.featured,
           publishedAt: post.publishedAt
             ? new Date(post.publishedAt).toISOString().slice(0, 10)
@@ -66,24 +64,20 @@ export default function EditBlogPage() {
     try {
       let imageId = formData.imageId
 
-      // Upload image if a new file was selected (check both state and ref)
-      const fileToUpload = formData.imageFile || imageFileRef.current
-      if (fileToUpload) {
-        const formDataUpload = new FormData()
-        formDataUpload.append('file', fileToUpload)
-
-        const uploadResponse = await fetch('/api/admin/media/upload', {
-          method: 'POST',
-          body: formDataUpload,
-        })
-
-        if (!uploadResponse.ok) {
-          const data = await uploadResponse.json()
-          throw new Error(data.error || 'Resim yükleme başarısız')
+      // Upload image if a new file was selected
+      if (imageUploadRef.current) {
+        try {
+          const uploadedFileId = await imageUploadRef.current.uploadFile()
+          if (uploadedFileId) {
+            imageId = uploadedFileId
+          }
+        } catch (uploadError) {
+          throw new Error(
+            uploadError instanceof Error
+              ? uploadError.message
+              : 'Resim yükleme başarısız'
+          )
         }
-
-        const uploadData = await uploadResponse.json()
-        imageId = uploadData.id
       }
 
       const response = await fetch(`/api/admin/blog/${id}`, {
@@ -175,13 +169,10 @@ export default function EditBlogPage() {
         </div>
 
         <ImageUpload
+          ref={imageUploadRef}
           value={formData.imageUrl}
           onChange={(url) => setFormData({ ...formData, imageUrl: url })}
           onFileIdChange={(id) => setFormData({ ...formData, imageId: id })}
-          onFileChange={(file) => {
-            imageFileRef.current = file
-            setFormData({ ...formData, imageFile: file })
-          }}
           label="Öne Çıkan Resim"
         />
 

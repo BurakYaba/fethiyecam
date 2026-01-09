@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import ImageUpload from '@/components/admin/ImageUpload'
+import ImageUpload, { ImageUploadRef } from '@/components/admin/ImageUpload'
 import { RiArrowLeftLine, RiSaveLine } from '@remixicon/react'
 import Link from 'next/link'
 import { stripHtmlTags } from '@/lib/utils'
@@ -14,14 +14,13 @@ export default function EditTestimonialPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
-  const avatarFileRef = useRef<File | null>(null)
+  const avatarUploadRef = useRef<ImageUploadRef>(null)
   const [formData, setFormData] = useState({
     quote: '',
     name: '',
     role: '',
     avatarId: null as string | null,
     avatarUrl: null as string | null,
-    avatarFile: null as File | null,
     rating: 5,
     order: 0,
   })
@@ -40,7 +39,6 @@ export default function EditTestimonialPage() {
           role: testimonial.role,
           avatarId: testimonial.avatarId,
           avatarUrl: testimonial.avatar?.url || null,
-          avatarFile: null,
           rating: testimonial.rating,
           order: testimonial.order,
         })
@@ -64,24 +62,20 @@ export default function EditTestimonialPage() {
     try {
       let avatarId = formData.avatarId
 
-      // Upload image if a new file was selected (check both state and ref)
-      const fileToUpload = formData.avatarFile || avatarFileRef.current
-      if (fileToUpload) {
-        const formDataUpload = new FormData()
-        formDataUpload.append('file', fileToUpload)
-
-        const uploadResponse = await fetch('/api/admin/media/upload', {
-          method: 'POST',
-          body: formDataUpload,
-        })
-
-        if (!uploadResponse.ok) {
-          const data = await uploadResponse.json()
-          throw new Error(data.error || 'Resim yükleme başarısız')
+      // Upload image if a new file was selected
+      if (avatarUploadRef.current) {
+        try {
+          const uploadedFileId = await avatarUploadRef.current.uploadFile()
+          if (uploadedFileId) {
+            avatarId = uploadedFileId
+          }
+        } catch (uploadError) {
+          throw new Error(
+            uploadError instanceof Error
+              ? uploadError.message
+              : 'Resim yükleme başarısız'
+          )
         }
-
-        const uploadData = await uploadResponse.json()
-        avatarId = uploadData.id
       }
 
       const response = await fetch(`/api/admin/testimonials/${id}`, {
@@ -186,13 +180,10 @@ export default function EditTestimonialPage() {
         </div>
 
         <ImageUpload
+          ref={avatarUploadRef}
           value={formData.avatarUrl}
           onChange={(url) => setFormData({ ...formData, avatarUrl: url })}
           onFileIdChange={(id) => setFormData({ ...formData, avatarId: id })}
-          onFileChange={(file) => {
-            avatarFileRef.current = file
-            setFormData({ ...formData, avatarFile: file })
-          }}
           label="Avatar Resmi"
         />
 

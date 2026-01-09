@@ -4,6 +4,10 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import BlogPostContent from "@/components/BlogPostContent";
 
+// Force dynamic rendering - prevent static generation and caching
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function BlogPostPage({
   params,
 }: {

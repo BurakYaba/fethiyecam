@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import ImageUpload from '@/components/admin/ImageUpload'
+import ImageUpload, { ImageUploadRef } from '@/components/admin/ImageUpload'
 import { RiArrowLeftLine, RiSaveLine, RiAddLine, RiDeleteBinLine } from '@remixicon/react'
 import Link from 'next/link'
 import Image from 'next/image'
+import imageCompression from 'browser-image-compression'
+import { upload } from '@vercel/blob/client'
 
 export default function EditGalleryPage() {
   const router = useRouter()
@@ -16,12 +18,11 @@ export default function EditGalleryPage() {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
   const [album, setAlbum] = useState<any>(null)
-  const coverImageFileRef = useRef<File | null>(null)
+  const coverImageUploadRef = useRef<ImageUploadRef>(null)
   const [formData, setFormData] = useState({
     title: '',
     coverImageId: null as string | null,
     coverImageUrl: null as string | null,
-    coverImageFile: null as File | null,
   })
 
   useEffect(() => {
@@ -37,7 +38,6 @@ export default function EditGalleryPage() {
           title: data.title,
           coverImageId: data.coverImageId,
           coverImageUrl: data.coverImage?.url || null,
-          coverImageFile: null,
         })
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Bir hata oluştu')
@@ -59,24 +59,20 @@ export default function EditGalleryPage() {
     try {
       let coverImageId = formData.coverImageId
 
-      // Upload image if a new file was selected (check both state and ref)
-      const fileToUpload = formData.coverImageFile || coverImageFileRef.current
-      if (fileToUpload) {
-        const formDataUpload = new FormData()
-        formDataUpload.append('file', fileToUpload)
-
-        const uploadResponse = await fetch('/api/admin/media/upload', {
-          method: 'POST',
-          body: formDataUpload,
-        })
-
-        if (!uploadResponse.ok) {
-          const data = await uploadResponse.json()
-          throw new Error(data.error || 'Resim yükleme başarısız')
+      // Upload image if a new file was selected
+      if (coverImageUploadRef.current) {
+        try {
+          const uploadedFileId = await coverImageUploadRef.current.uploadFile()
+          if (uploadedFileId) {
+            coverImageId = uploadedFileId
+          }
+        } catch (uploadError) {
+          throw new Error(
+            uploadError instanceof Error
+              ? uploadError.message
+              : 'Resim yükleme başarısız'
+          )
         }
-
-        const uploadData = await uploadResponse.json()
-        coverImageId = uploadData.id
       }
 
       const response = await fetch(`/api/admin/gallery/${id}`, {
@@ -108,21 +104,49 @@ export default function EditGalleryPage() {
 
     setUploading(true)
     try {
-      // Upload all files
+      // Upload all files using client-side upload
       const uploadPromises = Array.from(files).map(async (file) => {
-        const formData = new FormData()
-        formData.append('file', file)
-
-        const response = await fetch('/api/admin/media/upload', {
-          method: 'POST',
-          body: formData,
-        })
-
-        if (!response.ok) {
-          throw new Error('Resim yükleme başarısız')
+        // Optimize image in browser
+        const options = {
+          maxSizeMB: 2,
+          maxWidthOrHeight: 1600,
+          useWebWorker: true,
+          fileType: 'image/webp',
+          initialQuality: 0.85,
         }
 
-        return response.json()
+        const compressedFile = await imageCompression(file, options)
+
+        // Generate filename
+        const timestamp = Date.now()
+        const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
+        const nameWithoutExt = originalName.replace(/\.[^/.]+$/, '')
+        const filename = `uploads/${timestamp}-${nameWithoutExt}.webp`
+
+        // Upload directly to Vercel Blob
+        const blob = await upload(filename, compressedFile, {
+          access: 'public',
+          handleUploadUrl: '/api/admin/media/upload-token',
+        })
+
+        // Save media file record immediately
+        const saveResponse = await fetch('/api/admin/media/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            url: blob.url,
+            blobId: blob.pathname,
+            filename: filename.split('/').pop() || 'image.webp',
+            size: compressedFile.size,
+          }),
+        })
+
+        if (!saveResponse.ok) {
+          throw new Error('Failed to save media file record')
+        }
+
+        const mediaData = await saveResponse.json()
+        return { id: mediaData.id, url: blob.url }
       })
 
       const uploadedImages = await Promise.all(uploadPromises)
@@ -224,13 +248,10 @@ export default function EditGalleryPage() {
         </div>
 
         <ImageUpload
+          ref={coverImageUploadRef}
           value={formData.coverImageUrl}
           onChange={(url) => setFormData({ ...formData, coverImageUrl: url })}
           onFileIdChange={(id) => setFormData({ ...formData, coverImageId: id })}
-          onFileChange={(file) => {
-            coverImageFileRef.current = file
-            setFormData({ ...formData, coverImageFile: file })
-          }}
           label="Kapak Resmi"
         />
 

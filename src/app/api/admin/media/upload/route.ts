@@ -30,11 +30,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate file size (10MB max)
-    const maxSize = 10 * 1024 * 1024
+    // Reduce max size to 4MB to stay under Vercel's 4.5MB body limit
+    const maxSize = 4 * 1024 * 1024 // 4MB instead of 10MB
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: 'File size must be less than 10MB' },
+        { error: 'Dosya boyutu 4MB\'dan küçük olmalıdır' },
         { status: 400 }
       )
     }
@@ -46,8 +46,8 @@ export async function POST(request: NextRequest) {
     // Get image metadata
     const metadata = await sharp(buffer).metadata()
 
-    // Optimize image
-    const optimized = await optimizeImage(buffer, 1920, 90)
+    // Optimize more aggressively: reduce max width to 1600px and quality to 85%
+    const optimized = await optimizeImage(buffer, 1600, 85)
 
     // Upload to Vercel Blob
     const timestamp = Date.now()

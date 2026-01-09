@@ -9,8 +9,8 @@ export interface OptimizedImage {
 
 export async function optimizeImage(
   inputBuffer: Buffer,
-  maxWidth: number = 1920,
-  quality: number = 90
+  maxWidth: number = 1600, // Reduced from 1920
+  quality: number = 85 // Reduced from 90
 ): Promise<OptimizedImage> {
   const image = sharp(inputBuffer)
   const metadata = await image.metadata()

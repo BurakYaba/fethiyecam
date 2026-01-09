@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import ImageUpload from '@/components/admin/ImageUpload'
+import ImageUpload, { ImageUploadRef } from '@/components/admin/ImageUpload'
 import { RiArrowLeftLine, RiSaveLine } from '@remixicon/react'
 import Link from 'next/link'
 
@@ -10,12 +10,11 @@ export default function NewGalleryPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const coverImageFileRef = useRef<File | null>(null)
+  const coverImageUploadRef = useRef<ImageUploadRef>(null)
   const [formData, setFormData] = useState({
     title: '',
     coverImageId: null as string | null,
     coverImageUrl: null as string | null,
-    coverImageFile: null as File | null,
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -26,24 +25,20 @@ export default function NewGalleryPage() {
     try {
       let coverImageId = formData.coverImageId
 
-      // Upload image if a new file was selected (check both state and ref)
-      const fileToUpload = formData.coverImageFile || coverImageFileRef.current
-      if (fileToUpload) {
-        const formDataUpload = new FormData()
-        formDataUpload.append('file', fileToUpload)
-
-        const uploadResponse = await fetch('/api/admin/media/upload', {
-          method: 'POST',
-          body: formDataUpload,
-        })
-
-        if (!uploadResponse.ok) {
-          const data = await uploadResponse.json()
-          throw new Error(data.error || 'Resim yükleme başarısız')
+      // Upload image if a new file was selected
+      if (coverImageUploadRef.current) {
+        try {
+          const uploadedFileId = await coverImageUploadRef.current.uploadFile()
+          if (uploadedFileId) {
+            coverImageId = uploadedFileId
+          }
+        } catch (uploadError) {
+          throw new Error(
+            uploadError instanceof Error
+              ? uploadError.message
+              : 'Resim yükleme başarısız'
+          )
         }
-
-        const uploadData = await uploadResponse.json()
-        coverImageId = uploadData.id
       }
 
       const response = await fetch('/api/admin/gallery', {
@@ -110,13 +105,10 @@ export default function NewGalleryPage() {
         </div>
 
         <ImageUpload
+          ref={coverImageUploadRef}
           value={formData.coverImageUrl}
           onChange={(url) => setFormData({ ...formData, coverImageUrl: url })}
           onFileIdChange={(id) => setFormData({ ...formData, coverImageId: id })}
-          onFileChange={(file) => {
-            coverImageFileRef.current = file
-            setFormData({ ...formData, coverImageFile: file })
-          }}
           label="Kapak Resmi"
         />
 

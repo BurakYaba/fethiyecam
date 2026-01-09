@@ -1,8 +1,10 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useImperativeHandle, forwardRef } from 'react'
 import { RiUploadLine, RiCloseLine, RiImageLine } from '@remixicon/react'
 import Image from 'next/image'
+import imageCompression from 'browser-image-compression'
+import { upload } from '@vercel/blob/client'
 
 interface ImageUploadProps {
   value?: string | null
@@ -13,18 +15,27 @@ interface ImageUploadProps {
   required?: boolean
 }
 
-export default function ImageUpload({
-  value,
-  onChange,
-  onFileIdChange,
-  onFileChange,
-  label = 'Resim',
-  required = false,
-}: ImageUploadProps) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [preview, setPreview] = useState<string | null>(value || null)
-  const [error, setError] = useState<string | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+export interface ImageUploadRef {
+  uploadFile: () => Promise<string | null> // Returns media file ID
+}
+
+const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
+  (
+    {
+      value,
+      onChange,
+      onFileIdChange,
+      onFileChange,
+      label = 'Resim',
+      required = false,
+    },
+    ref
+  ) => {
+    const [selectedFile, setSelectedFile] = useState<File | null>(null)
+    const [preview, setPreview] = useState<string | null>(value || null)
+    const [error, setError] = useState<string | null>(null)
+    const [uploading, setUploading] = useState(false)
+    const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Update preview when value changes (e.g., when editing existing content)
   useEffect(() => {
@@ -43,11 +54,8 @@ export default function ImageUpload({
       return
     }
 
-    // Validate file size (10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      setError('Dosya boyutu 10MB\'dan küçük olmalıdır')
-      return
-    }
+    // Remove file size limit - we'll optimize in browser
+    // Large files will be compressed before upload
 
     setError(null)
     setSelectedFile(file)
@@ -89,6 +97,78 @@ export default function ImageUpload({
       onFileChange(null)
     }
   }
+
+  // Expose upload method via ref
+  useImperativeHandle(ref, () => ({
+    uploadFile: async (): Promise<string | null> => {
+      if (!selectedFile) {
+        return null
+      }
+
+      setUploading(true)
+      setError(null)
+
+      try {
+        // Optimize image in browser
+        const options = {
+          maxSizeMB: 2, // Target size after compression
+          maxWidthOrHeight: 1600,
+          useWebWorker: true,
+          fileType: 'image/webp',
+          initialQuality: 0.85,
+        }
+
+        const compressedFile = await imageCompression(selectedFile, options)
+
+        // Generate filename
+        const timestamp = Date.now()
+        const originalName = selectedFile.name.replace(/[^a-zA-Z0-9.-]/g, '_')
+        const nameWithoutExt = originalName.replace(/\.[^/.]+$/, '')
+        const filename = `uploads/${timestamp}-${nameWithoutExt}.webp`
+
+        // Upload directly to Vercel Blob
+        const blob = await upload(filename, compressedFile, {
+          access: 'public',
+          handleUploadUrl: '/api/admin/media/upload-token',
+        })
+
+        // Save media file record immediately (webhook will update dimensions later)
+        const saveResponse = await fetch('/api/admin/media/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            url: blob.url,
+            blobId: blob.pathname,
+            filename: filename.split('/').pop() || 'image.webp',
+            size: compressedFile.size,
+          }),
+        })
+
+        if (!saveResponse.ok) {
+          throw new Error('Failed to save media file record')
+        }
+
+        const mediaData = await saveResponse.json()
+        const fileId = mediaData.id
+
+        // Update preview to use the uploaded URL
+        setPreview(blob.url)
+        onChange(blob.url)
+        if (onFileIdChange) {
+          onFileIdChange(fileId)
+        }
+
+        setUploading(false)
+        return fileId
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Resim yükleme başarısız'
+        setError(errorMessage)
+        setUploading(false)
+        throw err
+      }
+    },
+  }))
 
   // Cleanup object URL on unmount
   useEffect(() => {
@@ -151,10 +231,15 @@ export default function ImageUpload({
             <p className="text-sm text-gray-600">
               Resim seçmek için tıklayın veya sürükleyin
             </p>
-            <p className="text-xs text-gray-500">Maksimum 10MB</p>
+            <p className="text-xs text-gray-500">Herhangi bir boyut (otomatik optimize edilecek)</p>
             {selectedFile && (
               <p className="text-xs text-blue-600 mt-2">
                 ✓ Resim seçildi (kaydet butonuna tıkladığınızda yüklenecek)
+              </p>
+            )}
+            {uploading && (
+              <p className="text-xs text-blue-600 mt-2">
+                ⏳ Resim yükleniyor...
               </p>
             )}
           </div>
@@ -166,4 +251,8 @@ export default function ImageUpload({
       )}
     </div>
   )
-}
+})
+
+ImageUpload.displayName = 'ImageUpload'
+
+export default ImageUpload

@@ -5,6 +5,10 @@ import Link from "next/link";
 import { RiArrowRightLine } from "@remixicon/react";
 import { db } from "@/lib/db";
 
+// Force dynamic rendering - prevent static generation and caching
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function BlogPage() {
   let blogPosts: any[] = [];
   try {

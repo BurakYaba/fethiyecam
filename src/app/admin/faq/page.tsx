@@ -3,6 +3,10 @@ import Link from 'next/link'
 import { RiAddLine } from '@remixicon/react'
 import FAQActions from '@/components/admin/FAQActions'
 
+// Force dynamic rendering - prevent static generation and caching
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function FAQListPage() {
   // Middleware handles authentication
   const faqs = await db.fAQ.findMany({
