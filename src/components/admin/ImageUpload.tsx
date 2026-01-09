@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { RiUploadLine, RiCloseLine, RiImageLine } from '@remixicon/react'
 import Image from 'next/image'
 
@@ -8,6 +8,7 @@ interface ImageUploadProps {
   value?: string | null
   onChange: (url: string | null) => void
   onFileIdChange?: (fileId: string | null) => void
+  onFileChange?: (file: File | null) => void
   label?: string
   required?: boolean
 }
@@ -16,15 +17,23 @@ export default function ImageUpload({
   value,
   onChange,
   onFileIdChange,
+  onFileChange,
   label = 'Resim',
   required = false,
 }: ImageUploadProps) {
-  const [uploading, setUploading] = useState(false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(value || null)
   const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Update preview when value changes (e.g., when editing existing content)
+  useEffect(() => {
+    if (value && !selectedFile) {
+      setPreview(value)
+    }
+  }, [value, selectedFile])
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
@@ -41,45 +50,54 @@ export default function ImageUpload({
     }
 
     setError(null)
-    setUploading(true)
+    setSelectedFile(file)
 
-    try {
-      const formData = new FormData()
-      formData.append('file', file)
+    // Create local preview URL
+    const objectUrl = URL.createObjectURL(file)
+    setPreview(objectUrl)
+    onChange(objectUrl)
 
-      const response = await fetch('/api/admin/media/upload', {
-        method: 'POST',
-        body: formData,
-      })
+    // Notify parent component about the file
+    if (onFileChange) {
+      onFileChange(file)
+    }
 
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Yükleme başarısız')
-      }
+    // Clear fileId since we have a new file
+    if (onFileIdChange) {
+      onFileIdChange(null)
+    }
 
-      const data = await response.json()
-      setPreview(data.url)
-      onChange(data.url)
-      if (onFileIdChange) {
-        onFileIdChange(data.id)
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Yükleme başarısız')
-    } finally {
-      setUploading(false)
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ''
-      }
+    // Clean up input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
     }
   }
 
   const handleRemove = () => {
+    // Clean up object URL if it was created from a file
+    if (selectedFile && preview && preview.startsWith('blob:')) {
+      URL.revokeObjectURL(preview)
+    }
+    
+    setSelectedFile(null)
     setPreview(null)
     onChange(null)
     if (onFileIdChange) {
       onFileIdChange(null)
     }
+    if (onFileChange) {
+      onFileChange(null)
+    }
   }
+
+  // Cleanup object URL on unmount
+  useEffect(() => {
+    return () => {
+      if (preview && preview.startsWith('blob:')) {
+        URL.revokeObjectURL(preview)
+      }
+    }
+  }, [preview])
 
   return (
     <div>
@@ -91,13 +109,22 @@ export default function ImageUpload({
       {preview ? (
         <div className="relative group">
           <div className="relative w-full h-64 rounded-lg overflow-hidden border border-gray-200">
-            <Image
-              src={preview}
-              alt="Preview"
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
+            {preview.startsWith('blob:') ? (
+              // Use regular img tag for blob URLs (Next.js Image doesn't support blob:)
+              <img
+                src={preview}
+                alt="Preview"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <Image
+                src={preview}
+                alt="Preview"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+            )}
           </div>
           <button
             type="button"
@@ -118,22 +145,19 @@ export default function ImageUpload({
             accept="image/*"
             onChange={handleFileSelect}
             className="hidden"
-            disabled={uploading}
           />
-          {uploading ? (
-            <div className="flex flex-col items-center gap-2">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF7F00]"></div>
-              <p className="text-sm text-gray-600">Yükleniyor...</p>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center gap-2">
-              <RiImageLine className="w-12 h-12 text-gray-400" />
-              <p className="text-sm text-gray-600">
-                Resim yüklemek için tıklayın veya sürükleyin
+          <div className="flex flex-col items-center gap-2">
+            <RiImageLine className="w-12 h-12 text-gray-400" />
+            <p className="text-sm text-gray-600">
+              Resim seçmek için tıklayın veya sürükleyin
+            </p>
+            <p className="text-xs text-gray-500">Maksimum 10MB</p>
+            {selectedFile && (
+              <p className="text-xs text-blue-600 mt-2">
+                ✓ Resim seçildi (kaydet butonuna tıkladığınızda yüklenecek)
               </p>
-              <p className="text-xs text-gray-500">Maksimum 10MB</p>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       )}
 

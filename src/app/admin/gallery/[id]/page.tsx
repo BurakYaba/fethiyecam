@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import ImageUpload from '@/components/admin/ImageUpload'
 import { RiArrowLeftLine, RiSaveLine, RiAddLine, RiDeleteBinLine } from '@remixicon/react'
@@ -16,10 +16,12 @@ export default function EditGalleryPage() {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
   const [album, setAlbum] = useState<any>(null)
+  const coverImageFileRef = useRef<File | null>(null)
   const [formData, setFormData] = useState({
     title: '',
     coverImageId: null as string | null,
     coverImageUrl: null as string | null,
+    coverImageFile: null as File | null,
   })
 
   useEffect(() => {
@@ -35,6 +37,7 @@ export default function EditGalleryPage() {
           title: data.title,
           coverImageId: data.coverImageId,
           coverImageUrl: data.coverImage?.url || null,
+          coverImageFile: null,
         })
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Bir hata oluştu')
@@ -54,12 +57,34 @@ export default function EditGalleryPage() {
     setSaving(true)
 
     try {
+      let coverImageId = formData.coverImageId
+
+      // Upload image if a new file was selected (check both state and ref)
+      const fileToUpload = formData.coverImageFile || coverImageFileRef.current
+      if (fileToUpload) {
+        const formDataUpload = new FormData()
+        formDataUpload.append('file', fileToUpload)
+
+        const uploadResponse = await fetch('/api/admin/media/upload', {
+          method: 'POST',
+          body: formDataUpload,
+        })
+
+        if (!uploadResponse.ok) {
+          const data = await uploadResponse.json()
+          throw new Error(data.error || 'Resim yükleme başarısız')
+        }
+
+        const uploadData = await uploadResponse.json()
+        coverImageId = uploadData.id
+      }
+
       const response = await fetch(`/api/admin/gallery/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: formData.title,
-          coverImageId: formData.coverImageId,
+          coverImageId,
         }),
       })
 
@@ -78,39 +103,48 @@ export default function EditGalleryPage() {
     }
   }
 
-  const handleImageUpload = async (file: File) => {
+  const handleImageUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) return
+
     setUploading(true)
     try {
-      const formData = new FormData()
-      formData.append('file', file)
+      // Upload all files
+      const uploadPromises = Array.from(files).map(async (file) => {
+        const formData = new FormData()
+        formData.append('file', file)
 
-      const response = await fetch('/api/admin/media/upload', {
-        method: 'POST',
-        body: formData,
-      })
+        const response = await fetch('/api/admin/media/upload', {
+          method: 'POST',
+          body: formData,
+        })
 
-      if (!response.ok) {
-        throw new Error('Resim yükleme başarısız')
-      }
-
-      const data = await response.json()
-
-      // Add image to album
-      const addResponse = await fetch(`/api/admin/gallery/${id}/images`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          imageId: data.id,
-        }),
-      })
-
-      if (addResponse.ok) {
-        router.refresh()
-        // Refetch album
-        const albumResponse = await fetch(`/api/admin/gallery/${id}`)
-        if (albumResponse.ok) {
-          setAlbum(await albumResponse.json())
+        if (!response.ok) {
+          throw new Error('Resim yükleme başarısız')
         }
+
+        return response.json()
+      })
+
+      const uploadedImages = await Promise.all(uploadPromises)
+
+      // Add all images to album
+      const addPromises = uploadedImages.map((data) =>
+        fetch(`/api/admin/gallery/${id}/images`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            imageId: data.id,
+          }),
+        })
+      )
+
+      await Promise.all(addPromises)
+
+      router.refresh()
+      // Refetch album
+      const albumResponse = await fetch(`/api/admin/gallery/${id}`)
+      if (albumResponse.ok) {
+        setAlbum(await albumResponse.json())
       }
     } catch (err) {
       alert('Resim yükleme başarısız')
@@ -193,6 +227,10 @@ export default function EditGalleryPage() {
           value={formData.coverImageUrl}
           onChange={(url) => setFormData({ ...formData, coverImageUrl: url })}
           onFileIdChange={(id) => setFormData({ ...formData, coverImageId: id })}
+          onFileChange={(file) => {
+            coverImageFileRef.current = file
+            setFormData({ ...formData, coverImageFile: file })
+          }}
           label="Kapak Resmi"
         />
 
@@ -223,10 +261,10 @@ export default function EditGalleryPage() {
             <input
               type="file"
               accept="image/*"
+              multiple
               className="hidden"
               onChange={(e) => {
-                const file = e.target.files?.[0]
-                if (file) handleImageUpload(file)
+                handleImageUpload(e.target.files)
               }}
               disabled={uploading}
             />
@@ -235,7 +273,7 @@ export default function EditGalleryPage() {
 
         {uploading && (
           <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-700">
-            Resim yükleniyor...
+            Resimler yükleniyor...
           </div>
         )}
 

@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { stripHtmlTags } from '@/lib/utils'
 import Link from 'next/link'
 import { RiAddLine } from '@remixicon/react'
 import Image from 'next/image'
@@ -89,7 +90,7 @@ export default async function TestimonialsListPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-sm text-gray-700 line-clamp-2 max-w-md">
-                        {testimonial.quote}
+                        {stripHtmlTags(testimonial.quote)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

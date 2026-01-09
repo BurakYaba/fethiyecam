@@ -51,7 +51,9 @@ export async function POST(request: NextRequest) {
 
     // Upload to Vercel Blob
     const timestamp = Date.now()
-    const filename = `uploads/${timestamp}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+    const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
+    const nameWithoutExt = originalName.replace(/\.[^/.]+$/, '') // Remove extension
+    const filename = `uploads/${timestamp}-${nameWithoutExt}.webp` // Add .webp extension
     const { url, blobId } = await uploadToBlob(
       filename,
       optimized.buffer,

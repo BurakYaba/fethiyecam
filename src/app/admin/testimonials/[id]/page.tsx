@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import ImageUpload from '@/components/admin/ImageUpload'
-import RichTextEditor from '@/components/admin/RichTextEditor'
 import { RiArrowLeftLine, RiSaveLine } from '@remixicon/react'
 import Link from 'next/link'
+import { stripHtmlTags } from '@/lib/utils'
 
 export default function EditTestimonialPage() {
   const router = useRouter()
@@ -14,12 +14,14 @@ export default function EditTestimonialPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const avatarFileRef = useRef<File | null>(null)
   const [formData, setFormData] = useState({
     quote: '',
     name: '',
     role: '',
     avatarId: null as string | null,
     avatarUrl: null as string | null,
+    avatarFile: null as File | null,
     rating: 5,
     order: 0,
   })
@@ -33,11 +35,12 @@ export default function EditTestimonialPage() {
         }
         const testimonial = await response.json()
         setFormData({
-          quote: testimonial.quote,
+          quote: stripHtmlTags(testimonial.quote), // Strip HTML tags when loading
           name: testimonial.name,
           role: testimonial.role,
           avatarId: testimonial.avatarId,
           avatarUrl: testimonial.avatar?.url || null,
+          avatarFile: null,
           rating: testimonial.rating,
           order: testimonial.order,
         })
@@ -59,6 +62,28 @@ export default function EditTestimonialPage() {
     setSaving(true)
 
     try {
+      let avatarId = formData.avatarId
+
+      // Upload image if a new file was selected (check both state and ref)
+      const fileToUpload = formData.avatarFile || avatarFileRef.current
+      if (fileToUpload) {
+        const formDataUpload = new FormData()
+        formDataUpload.append('file', fileToUpload)
+
+        const uploadResponse = await fetch('/api/admin/media/upload', {
+          method: 'POST',
+          body: formDataUpload,
+        })
+
+        if (!uploadResponse.ok) {
+          const data = await uploadResponse.json()
+          throw new Error(data.error || 'Resim yükleme başarısız')
+        }
+
+        const uploadData = await uploadResponse.json()
+        avatarId = uploadData.id
+      }
+
       const response = await fetch(`/api/admin/testimonials/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -66,7 +91,7 @@ export default function EditTestimonialPage() {
           quote: formData.quote,
           name: formData.name,
           role: formData.role,
-          avatarId: formData.avatarId,
+          avatarId,
           rating: formData.rating,
           order: formData.order,
         }),
@@ -146,17 +171,28 @@ export default function EditTestimonialPage() {
           </div>
         </div>
 
-        <RichTextEditor
-          content={formData.quote}
-          onChange={(html) => setFormData({ ...formData, quote: html })}
-          label="Yorum"
-          required
-        />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Yorum <span className="text-red-500">*</span>
+          </label>
+          <textarea
+            value={formData.quote}
+            onChange={(e) => setFormData({ ...formData, quote: e.target.value })}
+            required
+            rows={5}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF7F00] focus:border-transparent resize-y"
+            placeholder="Müşteri yorumunu buraya yazın..."
+          />
+        </div>
 
         <ImageUpload
           value={formData.avatarUrl}
           onChange={(url) => setFormData({ ...formData, avatarUrl: url })}
           onFileIdChange={(id) => setFormData({ ...formData, avatarId: id })}
+          onFileChange={(file) => {
+            avatarFileRef.current = file
+            setFormData({ ...formData, avatarFile: file })
+          }}
           label="Avatar Resmi"
         />
 

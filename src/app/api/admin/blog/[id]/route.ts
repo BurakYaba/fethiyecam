@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { z } from 'zod'
 import { generateSlug } from '@/lib/utils'
+import { deleteFromBlob } from '@/lib/blob'
 
 export const dynamic = 'force-dynamic'
 
@@ -128,9 +129,61 @@ export async function DELETE(
     }
 
     const { id } = await params
+    
+    // Get the blog post with image to delete blob
+    const blogPost = await db.blogPost.findUnique({
+      where: { id },
+      include: { image: true },
+    })
+
+    if (!blogPost) {
+      return NextResponse.json({ error: 'Blog post not found' }, { status: 404 })
+    }
+
+    // Delete image from blob storage if exists
+    if (blogPost.image?.blobId) {
+      try {
+        await deleteFromBlob(blogPost.image.blobId, blogPost.image.url)
+      } catch (error) {
+        console.error(`Error deleting blob for blog post ${id}:`, error)
+        // Continue with deletion even if blob deletion fails
+      }
+    }
+
+    // Delete the blog post (cascade will handle MediaFile deletion)
     await db.blogPost.delete({
       where: { id },
     })
+
+    // Delete MediaFile record if it exists and is not used elsewhere
+    if (blogPost.imageId) {
+      const mediaFile = await db.mediaFile.findUnique({
+        where: { id: blogPost.imageId },
+        include: {
+          blogPostsAsImage: true,
+          galleryAlbumsAsCover: true,
+          galleryImagesAsImage: true,
+          servicesAsImage: true,
+          testimonialsAsAvatar: true,
+        },
+      })
+
+      // Only delete if not used by other entities
+      if (mediaFile) {
+        const isUsedElsewhere =
+          mediaFile.blogPostsAsImage.length > 0 ||
+          mediaFile.galleryAlbumsAsCover.length > 0 ||
+          mediaFile.galleryImagesAsImage.length > 0 ||
+          mediaFile.servicesAsImage.length > 0 ||
+          mediaFile.testimonialsAsAvatar.length > 0
+
+        if (!isUsedElsewhere) {
+          await db.mediaFile.delete({
+            where: { id: blogPost.imageId },
+          })
+        }
+      }
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { RiStarLine, RiArrowLeftSLine, RiArrowRightSLine } from "@remixicon/react";
 import Image from "next/image";
+import { stripHtmlTags } from "@/lib/utils";
 
 export default function Testimonials() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -57,7 +58,7 @@ export default function Testimonials() {
                   className="text-xl md:text-2xl text-gray-900 mt-4 mb-6 leading-relaxed"
                   style={{ fontFamily: "var(--font-heading)" }}
                 >
-                  &ldquo;{testimonial.quote}&rdquo;
+                  &ldquo;{stripHtmlTags(testimonial.quote)}&rdquo;
                 </p>
 
                 {/* Star Rating */}

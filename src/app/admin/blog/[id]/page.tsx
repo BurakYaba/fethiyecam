@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import ImageUpload from '@/components/admin/ImageUpload'
 import RichTextEditor from '@/components/admin/RichTextEditor'
@@ -14,12 +14,14 @@ export default function EditBlogPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const imageFileRef = useRef<File | null>(null)
   const [formData, setFormData] = useState({
     title: '',
     excerpt: '',
     content: '',
     imageId: null as string | null,
     imageUrl: null as string | null,
+    imageFile: null as File | null,
     featured: false,
     publishedAt: '',
   })
@@ -38,9 +40,10 @@ export default function EditBlogPage() {
           content: post.content || '',
           imageId: post.imageId,
           imageUrl: post.image?.url || null,
+          imageFile: null,
           featured: post.featured,
           publishedAt: post.publishedAt
-            ? new Date(post.publishedAt).toISOString().slice(0, 16)
+            ? new Date(post.publishedAt).toISOString().slice(0, 10)
             : '',
         })
       } catch (err) {
@@ -61,6 +64,28 @@ export default function EditBlogPage() {
     setSaving(true)
 
     try {
+      let imageId = formData.imageId
+
+      // Upload image if a new file was selected (check both state and ref)
+      const fileToUpload = formData.imageFile || imageFileRef.current
+      if (fileToUpload) {
+        const formDataUpload = new FormData()
+        formDataUpload.append('file', fileToUpload)
+
+        const uploadResponse = await fetch('/api/admin/media/upload', {
+          method: 'POST',
+          body: formDataUpload,
+        })
+
+        if (!uploadResponse.ok) {
+          const data = await uploadResponse.json()
+          throw new Error(data.error || 'Resim yükleme başarısız')
+        }
+
+        const uploadData = await uploadResponse.json()
+        imageId = uploadData.id
+      }
+
       const response = await fetch(`/api/admin/blog/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -68,7 +93,7 @@ export default function EditBlogPage() {
           title: formData.title,
           excerpt: formData.excerpt,
           content: formData.content,
-          imageId: formData.imageId,
+          imageId,
           featured: formData.featured,
           publishedAt: formData.publishedAt || null,
         }),
@@ -153,6 +178,10 @@ export default function EditBlogPage() {
           value={formData.imageUrl}
           onChange={(url) => setFormData({ ...formData, imageUrl: url })}
           onFileIdChange={(id) => setFormData({ ...formData, imageId: id })}
+          onFileChange={(file) => {
+            imageFileRef.current = file
+            setFormData({ ...formData, imageFile: file })
+          }}
           label="Öne Çıkan Resim"
         />
 
@@ -180,7 +209,7 @@ export default function EditBlogPage() {
             Yayın Tarihi
           </label>
           <input
-            type="datetime-local"
+            type="date"
             value={formData.publishedAt}
             onChange={(e) => setFormData({ ...formData, publishedAt: e.target.value })}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF7F00] focus:border-transparent"

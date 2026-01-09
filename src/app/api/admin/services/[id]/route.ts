@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { z } from 'zod'
+import { deleteFromBlob } from '@/lib/blob'
 
 export const dynamic = 'force-dynamic'
 
@@ -89,9 +90,73 @@ export async function DELETE(
     }
 
     const { id } = await params
+    
+    // Get the service with image to delete blob
+    const service = await db.service.findUnique({
+      where: { id },
+      include: { image: true },
+    })
+
+    if (!service) {
+      return NextResponse.json({ error: 'Service not found' }, { status: 404 })
+    }
+
+    // Delete image from blob storage if exists
+    if (service.image) {
+      if (service.image.blobId) {
+        try {
+          console.log(`Deleting blob for service ${id}:`, {
+            blobId: service.image.blobId,
+            url: service.image.url,
+          })
+          await deleteFromBlob(service.image.blobId, service.image.url)
+        } catch (error) {
+          console.error(`Error deleting blob for service ${id}:`, error)
+          // Continue with deletion even if blob deletion fails
+        }
+      } else {
+        console.warn(`Service ${id} image has no blobId. URL: ${service.image.url}`)
+      }
+    } else {
+      console.warn(`Service ${id} has no image associated`)
+    }
+
+    // Delete the service
     await db.service.delete({ where: { id } })
+
+    // Delete MediaFile record if it exists and is not used elsewhere
+    if (service.imageId) {
+      const mediaFile = await db.mediaFile.findUnique({
+        where: { id: service.imageId },
+        include: {
+          blogPostsAsImage: true,
+          galleryAlbumsAsCover: true,
+          galleryImagesAsImage: true,
+          servicesAsImage: true,
+          testimonialsAsAvatar: true,
+        },
+      })
+
+      // Only delete if not used by other entities
+      if (mediaFile) {
+        const isUsedElsewhere =
+          mediaFile.blogPostsAsImage.length > 0 ||
+          mediaFile.galleryAlbumsAsCover.length > 0 ||
+          mediaFile.galleryImagesAsImage.length > 0 ||
+          mediaFile.servicesAsImage.length > 0 ||
+          mediaFile.testimonialsAsAvatar.length > 0
+
+        if (!isUsedElsewhere) {
+          await db.mediaFile.delete({
+            where: { id: service.imageId },
+          })
+        }
+      }
+    }
+
     return NextResponse.json({ success: true })
   } catch (error) {
+    console.error('Delete service error:', error)
     return NextResponse.json({ error: 'Failed to delete service' }, { status: 500 })
   }
 }

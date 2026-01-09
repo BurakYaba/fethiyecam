@@ -43,7 +43,19 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const data = serviceSchema.parse(body)
 
-    const service = await db.service.create({ data, include: { image: true } })
+    // Get current max order to set new service at the end
+    const maxOrder = await db.service.findFirst({
+      orderBy: { order: 'desc' },
+      select: { order: true },
+    })
+
+    const service = await db.service.create({
+      data: {
+        ...data,
+        order: maxOrder ? maxOrder.order + 1 : 0,
+      },
+      include: { image: true },
+    })
 
     if (data.imageId) {
       await fetch(`${request.nextUrl.origin}/api/admin/media/confirm`, {
