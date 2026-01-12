@@ -1,15 +1,58 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { RiCheckLine, RiStarLine } from "@remixicon/react";
 import Image from "next/image";
 
-const metrics = [
+const defaultMetrics = [
   { label: "Ekibimizin dakikliği", value: 96 },
   { label: "Temizlik kalitesi", value: 94 },
   { label: "Evinize ve eşyalarınıza saygı", value: 100 },
 ];
 
 export default function Satisfaction() {
+  const [metrics, setMetrics] = useState(defaultMetrics);
+  const [title, setTitle] = useState("Müşterilerimiz Ne Düşünüyor");
+  const [subtitle, setSubtitle] = useState("Memnuniyet Anketi");
+  const [satisfactionRate, setSatisfactionRate] = useState(96);
+  const [imageUrl, setImageUrl] = useState("/images/image_home_02_01.png");
+
+  useEffect(() => {
+    // Fetch satisfaction metrics
+    fetch("/api/satisfaction-metrics")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setMetrics(
+            data.map((metric: any) => ({
+              label: metric.label,
+              value: metric.value,
+            }))
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch satisfaction metrics:", error);
+      });
+
+    // Fetch content block for satisfaction section
+    fetch("/api/content-blocks?page=home&type=satisfaction")
+      .then((res) => res.json())
+      .then((blocks) => {
+        if (Array.isArray(blocks) && blocks.length > 0) {
+          const block = blocks[0];
+          if (block.title) setTitle(block.title);
+          if (block.subtitle) setSubtitle(block.subtitle);
+          if (block.image?.url) setImageUrl(block.image.url);
+          if (block.config?.satisfactionRate) {
+            setSatisfactionRate(block.config.satisfactionRate);
+          }
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch satisfaction block:", error);
+      });
+  }, []);
   return (
     <section className="section-padding bg-cream">
       <div className="container mx-auto px-6">
@@ -18,7 +61,7 @@ export default function Satisfaction() {
           <div className="relative overflow-hidden">
             <div className="rounded-3xl overflow-hidden w-full relative">
               <Image
-                src="/images/image_home_02_01.png"
+                src={imageUrl}
                 alt="Mutlu müşteri"
                 width={800}
                 height={600}
@@ -43,7 +86,7 @@ export default function Satisfaction() {
                     className="text-4xl font-bold text-[#3D8C40]"
                     style={{ fontFamily: "var(--font-heading)" }}
                   >
-                    %96
+                    %{satisfactionRate}
                   </div>
                   <div className="text-sm text-gray-600">Memnuniyet Oranı</div>
                 </div>
@@ -53,12 +96,12 @@ export default function Satisfaction() {
 
           {/* Right - Content */}
           <div className="text-center md:text-left">
-            <span className="section-label">Memnuniyet Anketi</span>
+            <span className="section-label">{subtitle}</span>
             <h2
               className="text-4xl md:text-5xl text-gray-900 mb-6"
               style={{ fontFamily: "var(--font-heading)" }}
             >
-              Müşterilerimiz Ne Düşünüyor
+              {title}
             </h2>
 
             {/* Google Rating */}

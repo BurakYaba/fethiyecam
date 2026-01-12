@@ -1,8 +1,40 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { RiCheckLine, RiStarLine } from "@remixicon/react";
 import Link from "next/link";
 import Image from "next/image";
 
 export default function About() {
+  const [aboutData, setAboutData] = useState({
+    title: "Güvenebileceğiniz Profesyonel Cam Temizlik Hizmetleri",
+    subtitle: "Hakkımızda",
+    content:
+      "Ekibimiz, her temizlikten sonra memnuniyetinizi sağlamak için özverili çalışır. Açık iletişim, esnek randevu ve memnuniyet garantisi ile huzurunuzu ön planda tutuyoruz.",
+    image: "/images/image_home_02_02.png",
+    stats: [{ label: "Deneyimli Temizlikçi", value: "10+" }],
+  });
+
+  useEffect(() => {
+    fetch("/api/content-blocks?page=home&type=about")
+      .then((res) => res.json())
+      .then((blocks) => {
+        if (Array.isArray(blocks) && blocks.length > 0) {
+          const block = blocks[0];
+          setAboutData({
+            title: block.title || aboutData.title,
+            subtitle: block.subtitle || aboutData.subtitle,
+            content: block.content || aboutData.content,
+            image: block.image?.url || aboutData.image,
+            stats: block.config?.stats || aboutData.stats,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch about block:", error);
+      });
+  }, []);
+
   return (
     <section id="hakkimizda" className="section-padding bg-cream">
       <div className="container mx-auto px-6">
@@ -11,7 +43,7 @@ export default function About() {
           <div className="relative">
             <div className="relative rounded-3xl overflow-hidden w-full">
               <Image
-                src="/images/image_home_02_02.png"
+                src={aboutData.image}
                 alt="Profesyonel cam temizlik ekibi"
                 width={800}
                 height={600}
@@ -25,39 +57,40 @@ export default function About() {
             </div>
 
             {/* Stats Badge */}
-            <div className="absolute -bottom-4 -right-4 bg-cream rounded-2xl  p-5 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-lg bg-[#3D8C40]/10 flex items-center justify-center">
-                <RiCheckLine className="w-6 h-6 text-[#3D8C40]" />
-              </div>
-              <div>
-                <div
-                  className="text-3xl font-bold text-[#3D8C40]"
-                  style={{ fontFamily: "var(--font-heading)" }}
-                >
-                  10+
+            {aboutData.stats && aboutData.stats.length > 0 && (
+              <div className="absolute -bottom-4 -right-4 bg-cream rounded-2xl  p-5 flex items-center gap-4">
+                <div className="w-12 h-12 rounded-lg bg-[#3D8C40]/10 flex items-center justify-center">
+                  <RiCheckLine className="w-6 h-6 text-[#3D8C40]" />
                 </div>
-                <div className="text-sm text-gray-600">
-                  Deneyimli Temizlikçi
+                <div>
+                  <div
+                    className="text-3xl font-bold text-[#3D8C40]"
+                    style={{ fontFamily: "var(--font-heading)" }}
+                  >
+                    {aboutData.stats[0].value}
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    {aboutData.stats[0].label}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Right - Content */}
           <div>
-            <span className="section-label">Hakkımızda</span>
+            <span className="section-label">{aboutData.subtitle}</span>
             <h2
               className="text-4xl md:text-5xl text-gray-900 mb-6"
               style={{ fontFamily: "var(--font-heading)" }}
             >
-              Güvenebileceğiniz Profesyonel Cam Temizlik Hizmetleri
+              {aboutData.title}
             </h2>
 
-            <p className="text-gray-600 text-lg leading-relaxed mb-8">
-              Ekibimiz, her temizlikten sonra memnuniyetinizi sağlamak için
-              özverili çalışır. Açık iletişim, esnek randevu ve memnuniyet
-              garantisi ile huzurunuzu ön planda tutuyoruz.
-            </p>
+            <div
+              className="text-gray-600 text-lg leading-relaxed mb-8"
+              dangerouslySetInnerHTML={{ __html: aboutData.content }}
+            />
 
             {/* Award Badge */}
             <div className="flex items-center gap-4 mb-8 p-4 bg-white rounded-2xl shadow-sm">

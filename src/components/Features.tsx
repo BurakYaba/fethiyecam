@@ -1,21 +1,31 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { RiShieldLine, RiAwardLine, RiHeartLine } from "@remixicon/react";
 import Image from "next/image";
+import * as RemixIcon from "@remixicon/react";
 
-const features = [
+const iconMap: Record<string, any> = {
+  RiShieldLine,
+  RiAwardLine,
+  RiHeartLine,
+};
+
+const defaultFeatures = [
   {
-    icon: RiShieldLine,
+    icon: "RiShieldLine",
     title: "Güvenilir Firma",
     description:
       "Güvenilirlik üzerine kurulmuş bir şirketiz. Her zaman zamanında gelir ve mekanınıza özenle davranırız.",
   },
   {
-    icon: RiAwardLine,
+    icon: "RiAwardLine",
     title: "Profesyonel Hizmet",
     description:
       "Mükemmel performans, sabit fiyatlar, sürpriz yok. Her temizlik titiz, kişiselleştirilmiş ve dostane destekle sunulur.",
   },
   {
-    icon: RiHeartLine,
+    icon: "RiHeartLine",
     title: "Müşteri Memnuniyeti",
     description:
       "Açık iletişim, esnek randevu ve memnuniyet garantisi ile her temizlikten sonra mutlu olmanızı sağlıyoruz.",
@@ -23,27 +33,53 @@ const features = [
 ];
 
 export default function Features() {
+  const [features, setFeatures] = useState(defaultFeatures);
+
+  useEffect(() => {
+    fetch("/api/features")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setFeatures(
+            data.map((feature: any) => ({
+              icon: feature.icon || "RiShieldLine",
+              title: feature.title,
+              description: feature.description,
+            }))
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch features:", error);
+      });
+  }, []);
   return (
     <section className="section-padding">
       <div className="container mx-auto px-6">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Feature Cards */}
-          {features.map((feature, index) => (
-            <div key={index} className="feature-card">
-              <div className="w-12 h-12 rounded-xl bg-[#3D8C40]/10 flex items-center justify-center mb-5">
-                <feature.icon className="w-6 h-6 text-[#3D8C40]" />
-              </div>
+          {features.map((feature, index) => {
+            const IconComponent =
+              typeof feature.icon === "string"
+                ? iconMap[feature.icon] || RiShieldLine
+                : feature.icon || RiShieldLine;
+            return (
+              <div key={index} className="feature-card">
+                <div className="w-12 h-12 rounded-xl bg-[#3D8C40]/10 flex items-center justify-center mb-5">
+                  <IconComponent className="w-6 h-6 text-[#3D8C40]" />
+                </div>
               <h3
                 className="text-xl font-bold text-gray-900 mb-3"
                 style={{ fontFamily: "var(--font-heading)", fontWeight: 700 }}
               >
                 {feature.title}
               </h3>
-              <p className="text-gray-600 leading-relaxed">
-                {feature.description}
-              </p>
-            </div>
-          ))}
+                <p className="text-gray-600 leading-relaxed">
+                  {feature.description}
+                </p>
+              </div>
+            );
+          })}
 
           {/* Stat Card */}
           <div className="stat-card-green relative overflow-hidden">

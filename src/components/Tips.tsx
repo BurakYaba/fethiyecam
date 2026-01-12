@@ -1,29 +1,48 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { RiArrowRightLine } from "@remixicon/react";
 import Link from "next/link";
 import Image from "next/image";
 
-const tips = [
-  {
-    image: "/images/moving_cards_image_01.png",
-    date: "20 Aralık 2025",
-    title: "Cam Temizliğinde En Sık Yapılan 5 Hata",
-    featured: false,
-  },
-  {
-    image: "/images/moving_cards_image_02.png",
-    date: "15 Aralık 2025",
-    title: "Kış Aylarında Cam Bakımı Nasıl Yapılır?",
-    featured: true,
-  },
-  {
-    image: "/images/moving_cards_image_03.png",
-    date: "10 Aralık 2025",
-    title: "Profesyonel Cam Temizliği vs. Evde Yapılan",
-    featured: false,
-  },
-];
-
 export default function Tips() {
+  const [tips, setTips] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/api/blog")
+      .then((res) => res.json())
+      .then((posts) => {
+        // Get up to 3 featured or recent posts
+        const featuredPosts = posts
+          .filter((post: any) => post.publishedAt)
+          .sort((a: any, b: any) => {
+            if (a.featured && !b.featured) return -1;
+            if (!a.featured && b.featured) return 1;
+            return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+          })
+          .slice(0, 3)
+          .map((post: any) => ({
+            id: post.id,
+            slug: post.slug,
+            image: post.image?.url || "/images/moving_cards_image_01.png",
+            date: post.publishedAt
+              ? new Date(post.publishedAt).toLocaleDateString("tr-TR", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })
+              : "",
+            title: post.title,
+            featured: post.featured || false,
+          }));
+        setTips(featuredPosts);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch blog posts:", error);
+        // Fallback to empty array
+        setTips([]);
+      });
+  }, []);
   return (
     <section className="section-padding bg-cream">
       <div className="container mx-auto px-6">
@@ -40,14 +59,19 @@ export default function Tips() {
 
         {/* Cards Grid */}
         <div className="grid md:grid-cols-3 gap-6">
-          {tips.map((tip, index) => (
-            <Link
-              key={index}
-              href="/blog"
-              className={`blog-card block ${
-                tip.featured ? "md:row-span-1" : ""
-              }`}
-            >
+          {tips.length === 0 ? (
+            <div className="col-span-full text-center py-12 text-gray-500">
+              Henüz blog yazısı yok.
+            </div>
+          ) : (
+            tips.map((tip, index) => (
+              <Link
+                key={tip.id || index}
+                href={`/blog/${tip.slug || ""}`}
+                className={`blog-card block ${
+                  tip.featured ? "md:row-span-1" : ""
+                }`}
+              >
               <div
                 className={`relative overflow-hidden ${
                   tip.featured ? "h-full" : ""
@@ -103,8 +127,9 @@ export default function Tips() {
                   </h3>
                 </div>
               )}
-            </Link>
-          ))}
+              </Link>
+            ))
+          )}
         </div>
 
         {/* Read More Link */}

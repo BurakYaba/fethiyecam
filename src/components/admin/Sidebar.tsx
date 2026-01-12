@@ -13,11 +13,17 @@ import {
   RiLogoutBoxLine,
   RiMenuLine,
   RiCloseLine,
+  RiFileLine,
+  RiSettingsLine,
+  RiMenu2Line,
 } from '@remixicon/react'
 import { useState } from 'react'
 
 const menuItems = [
   { href: '/admin', label: 'Dashboard', icon: RiDashboardLine },
+  { href: '/admin/pages', label: 'Sayfalar', icon: RiFileLine },
+  { href: '/admin/menu', label: 'Menü', icon: RiMenu2Line },
+  { href: '/admin/settings', label: 'Ayarlar', icon: RiSettingsLine },
   { href: '/admin/blog', label: 'Blog Yazıları', icon: RiArticleLine },
   { href: '/admin/gallery', label: 'Galeri', icon: RiImageLine },
   { href: '/admin/services', label: 'Hizmetler', icon: RiServiceLine },

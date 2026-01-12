@@ -11,6 +11,8 @@ export const revalidate = 0
 
 export default async function BlogPage() {
   let blogPosts: any[] = [];
+  let pageHero: any = null;
+  
   try {
     blogPosts = await db.blogPost.findMany({
       where: {
@@ -27,6 +29,22 @@ export default async function BlogPage() {
     console.error('Failed to fetch blog posts:', error);
   }
 
+  try {
+    pageHero = await db.pageHero.findUnique({
+      where: { page: 'blog' },
+      include: { image: true },
+    });
+  } catch (error) {
+    console.error('Failed to fetch page hero:', error);
+  }
+
+  const heroData = pageHero || {
+    title: 'Cam Temizlik\nİpuçları ve Rehberler',
+    subtitle: 'Blog',
+    description: 'Profesyonel cam temizliği hakkında bilmeniz gereken her şey. İpuçları, rehberler ve uzman önerileri.',
+    image: { url: '/images/bloghero.webp' },
+  };
+
   return (
     <>
       <Header />
@@ -36,7 +54,7 @@ export default async function BlogPage() {
           {/* Background Image */}
           <div className="absolute inset-0">
             <Image
-              src="/images/bloghero.webp"
+              src={heroData.image?.url || '/images/bloghero.webp'}
               alt="Blog"
               fill
               className="object-cover"
@@ -49,27 +67,28 @@ export default async function BlogPage() {
           {/* Content */}
           <div className="container mx-auto px-6 relative z-10">
             <div className="max-w-3xl">
-              <span
-                className="text-[#FF7F00] text-3xl mb-4 block"
-                style={{
-                  fontFamily: "var(--font-caveat)",
-                  fontWeight: 700,
-                }}
-              >
-                Blog
-              </span>
+              {heroData.subtitle && (
+                <span
+                  className="text-[#FF7F00] text-3xl mb-4 block"
+                  style={{
+                    fontFamily: "var(--font-caveat)",
+                    fontWeight: 700,
+                  }}
+                >
+                  {heroData.subtitle}
+                </span>
+              )}
               <h1
                 className="text-4xl md:text-5xl lg:text-6xl text-white mb-6 leading-tight"
-                style={{ fontFamily: "var(--font-heading)", fontWeight: 600 }}
+                style={{ fontFamily: "var(--font-heading)", fontWeight: 600, whiteSpace: "pre-line" }}
               >
-                Cam Temizlik
-                <br />
-                İpuçları ve Rehberler
+                {heroData.title}
               </h1>
-              <p className="text-white/90 text-lg md:text-xl mb-8">
-                Profesyonel cam temizliği hakkında bilmeniz gereken her şey.
-                İpuçları, rehberler ve uzman önerileri.
-              </p>
+              {heroData.description && (
+                <p className="text-white/90 text-lg md:text-xl mb-8">
+                  {heroData.description}
+                </p>
+              )}
             </div>
           </div>
         </section>

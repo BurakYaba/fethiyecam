@@ -189,8 +189,8 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
       {preview ? (
         <div className="relative group">
           <div className="relative w-full h-64 rounded-lg overflow-hidden border border-gray-200">
-            {preview.startsWith('blob:') ? (
-              // Use regular img tag for blob URLs (Next.js Image doesn't support blob:)
+            {preview.startsWith('blob:') || preview.startsWith('/api/') || preview.includes('?') ? (
+              // Use regular img tag for blob URLs, API routes, or URLs with query strings
               <img
                 src={preview}
                 alt="Preview"

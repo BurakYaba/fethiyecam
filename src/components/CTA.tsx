@@ -1,9 +1,38 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { RiMailLine } from "@remixicon/react";
 import Image from "next/image";
 
 export default function CTA() {
+  const [ctaData, setCtaData] = useState({
+    title: "Pırıl Pırıl Camlar\nİçin Bize Ulaşın",
+    subtitle: "Hemen teklif alın",
+    email: "info@fethiyecam.com",
+    backgroundImage: "/images/home_02_image_01.jpg",
+    teamImage: "/images/team_02.png",
+  });
+
+  useEffect(() => {
+    fetch("/api/content-blocks?page=home&type=cta")
+      .then((res) => res.json())
+      .then((blocks) => {
+        if (Array.isArray(blocks) && blocks.length > 0) {
+          const block = blocks[0];
+          setCtaData({
+            title: block.title || ctaData.title,
+            subtitle: block.subtitle || ctaData.subtitle,
+            email: block.config?.email || ctaData.email,
+            backgroundImage: block.image?.url || ctaData.backgroundImage,
+            teamImage: block.config?.teamImage || ctaData.teamImage,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch CTA block:", error);
+      });
+  }, []);
+
   return (
     <section className="section-padding bg-cream overflow-hidden">
       <div className="container mx-auto px-6">
@@ -13,7 +42,7 @@ export default function CTA() {
             {/* Background Image with Blur */}
             <div className="absolute inset-0">
               <Image
-                src="/images/home_02_image_01.jpg"
+                src={ctaData.backgroundImage}
                 alt=""
                 fill
                 className="object-cover"
@@ -26,7 +55,7 @@ export default function CTA() {
             {/* Team Image Overlay - Mobile: centered at bottom, Desktop: hidden here */}
             <div className="absolute left-1/2 -translate-x-1/2 bottom-0 z-30 pointer-events-none lg:hidden">
               <Image
-                src="/images/team_02.png"
+                src={ctaData.teamImage}
                 alt="Profesyonel temizlikçi"
                 width={300}
                 height={450}
@@ -72,7 +101,7 @@ export default function CTA() {
           {/* Team Image Overlay - Desktop: Between sections, overflowing to top */}
           <div className="absolute left-[40%] -translate-x-1/2 bottom-0 z-30 pointer-events-none hidden lg:block">
             <Image
-              src="/images/team_02.png"
+              src={ctaData.teamImage}
               alt="Profesyonel temizlikçi"
               width={600}
               height={780}
@@ -88,28 +117,26 @@ export default function CTA() {
               {/* Title */}
               <h2
                 className="text-2xl md:text-3xl lg:text-4xl text-white mb-3 leading-tight text-center lg:text-right"
-                style={{ fontFamily: "var(--font-heading)", fontWeight: 600 }}
+                style={{ fontFamily: "var(--font-heading)", fontWeight: 600, whiteSpace: "pre-line" }}
               >
-                Pırıl Pırıl Camlar
-                <br />
-                İçin Bize Ulaşın
+                {ctaData.title}
               </h2>
 
               {/* Subtitle */}
               <p className="text-white/90 text-lg mb-8 text-center lg:text-right">
-                Hemen teklif alın
+                {ctaData.subtitle}
               </p>
 
               {/* Email Contact */}
               <a
-                href="mailto:info@fethiyecam.com"
+                href={`mailto:${ctaData.email}`}
                 className="flex items-center gap-3 text-white hover:text-white/80 transition-colors group justify-center lg:justify-end"
               >
                 <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shrink-0">
                   <RiMailLine className="w-5 h-5 text-[#3D8C40]" />
                 </div>
                 <span className="text-lg group-hover:underline">
-                  info@fethiyecam.com
+                  {ctaData.email}
                 </span>
               </a>
             </div>

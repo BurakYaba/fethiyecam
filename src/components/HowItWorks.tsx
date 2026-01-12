@@ -1,24 +1,32 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { RiCalendarLine, RiClipboardLine, RiSparklingFill } from "@remixicon/react";
 import Link from "next/link";
 import Image from "next/image";
+import * as RemixIcon from "@remixicon/react";
 
-const steps = [
+const iconMap: Record<string, any> = {
+  RiCalendarLine,
+  RiClipboardLine,
+  RiSparklingFill,
+};
+
+const defaultSteps = [
   {
-    icon: RiCalendarLine,
+    icon: "RiCalendarLine",
     title: "Randevu Alın",
     description:
       "Bizi arayın veya iletişim formundan mesaj bırakın. Size en kısa sürede dönüş yapalım.",
   },
   {
-    icon: RiClipboardLine,
+    icon: "RiClipboardLine",
     title: "Paketinizi Seçin",
     description:
       "Cam sayısına, metrekareye veya ihtiyaçlarınıza göre özelleştirilmiş paketler sunuyoruz.",
   },
   {
-    icon: RiSparklingFill,
+    icon: "RiSparklingFill",
     title: "Biz Temizleriz, Siz Rahatlarsınız",
     description:
       "Profesyonel ekibimiz camlarınızı pırıl pırıl yapar, siz sadece keyfini çıkarın.",
@@ -26,6 +34,26 @@ const steps = [
 ];
 
 export default function HowItWorks() {
+  const [steps, setSteps] = useState(defaultSteps);
+
+  useEffect(() => {
+    fetch("/api/how-it-works")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setSteps(
+            data.map((step: any) => ({
+              icon: step.icon || "RiCalendarLine",
+              title: step.title,
+              description: step.description,
+            }))
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch steps:", error);
+      });
+  }, []);
   return (
     <section className="section-padding bg-cream">
       <div className="container mx-auto px-6">
@@ -44,13 +72,18 @@ export default function HowItWorks() {
 
         {/* Steps */}
         <div className="grid md:grid-cols-3 gap-8 lg:gap-12 relative">
-          {steps.map((step, index) => (
-            <div key={index} className="relative">
-              <div className="flex flex-col md:flex-row items-center md:items-start gap-5">
-                {/* Icon Circle */}
-                <div className="icon-circle flex-shrink-0">
-                  <step.icon className="w-8 h-8" />
-                </div>
+          {steps.map((step, index) => {
+            const IconComponent =
+              typeof step.icon === "string"
+                ? iconMap[step.icon] || RiCalendarLine
+                : step.icon || RiCalendarLine;
+            return (
+              <div key={index} className="relative">
+                <div className="flex flex-col md:flex-row items-center md:items-start gap-5">
+                  {/* Icon Circle */}
+                  <div className="icon-circle flex-shrink-0">
+                    <IconComponent className="w-8 h-8" />
+                  </div>
 
                 {/* Content */}
                 <div className="text-center md:text-left">
@@ -60,13 +93,14 @@ export default function HowItWorks() {
                   >
                     {step.title}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {step.description}
-                  </p>
+                    <p className="text-gray-600 leading-relaxed">
+                      {step.description}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
 
           {/* Floating Image Top - Between Randevu Alın and Paketinizi Seçin */}
           <div className="hidden md:block absolute top-[10%] left-[30%] transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10">

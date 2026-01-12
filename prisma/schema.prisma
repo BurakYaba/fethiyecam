@@ -64,24 +64,26 @@ model VerificationToken {
 
 // Media files tracking
 model MediaFile {
-  id          String   @id @default(cuid())
-  url         String   @db.Text
-  blobId      String?  // Vercel Blob ID
-  filename    String
-  mimeType    String
-  size        Int
-  width       Int?
-  height      Int?
-  status      String   @default("staging") // staging, active, orphaned
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  url       String   @db.Text
+  blobId    String? // Vercel Blob ID
+  filename  String
+  mimeType  String
+  size      Int
+  width     Int?
+  height    Int?
+  status    String   @default("staging") // staging, active, orphaned
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // References from content
-  blogPostsAsImage     BlogPost[]      @relation("BlogPostImage")
-  galleryAlbumsAsCover  GalleryAlbum[]  @relation("GalleryAlbumCover")
-  galleryImagesAsImage  GalleryImage[]  @relation("GalleryImageFile")
-  servicesAsImage       Service[]       @relation("ServiceImage")
-  testimonialsAsAvatar  Testimonial[]    @relation("TestimonialAvatar")
+  blogPostsAsImage     BlogPost[]     @relation("BlogPostImage")
+  galleryAlbumsAsCover GalleryAlbum[] @relation("GalleryAlbumCover")
+  galleryImagesAsImage GalleryImage[] @relation("GalleryImageFile")
+  servicesAsImage      Service[]      @relation("ServiceImage")
+  testimonialsAsAvatar Testimonial[]  @relation("TestimonialAvatar")
+  contentBlocksAsImage ContentBlock[] @relation("ContentBlockImage")
+  pageHeroesAsImage    PageHero[]     @relation("PageHeroImage")
 
   @@index([status])
   @@index([createdAt])
@@ -108,26 +110,26 @@ model BlogPost {
 
 // Gallery
 model GalleryAlbum {
-  id          String        @id @default(cuid())
-  title       String
+  id           String         @id @default(cuid())
+  title        String
   coverImageId String?
-  coverImage  MediaFile?    @relation("GalleryAlbumCover", fields: [coverImageId], references: [id])
-  images      GalleryImage[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  coverImage   MediaFile?     @relation("GalleryAlbumCover", fields: [coverImageId], references: [id])
+  images       GalleryImage[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 
   @@index([title])
 }
 
 model GalleryImage {
-  id          String       @id @default(cuid())
-  albumId     String
-  album       GalleryAlbum @relation(fields: [albumId], references: [id], onDelete: Cascade)
-  imageId     String
-  image       MediaFile    @relation("GalleryImageFile", fields: [imageId], references: [id])
-  order       Int          @default(0)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id        String       @id @default(cuid())
+  albumId   String
+  album     GalleryAlbum @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  imageId   String
+  image     MediaFile    @relation("GalleryImageFile", fields: [imageId], references: [id])
+  order     Int          @default(0)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 
   @@index([albumId])
   @@index([order])
@@ -135,29 +137,13 @@ model GalleryImage {
 
 // Services
 model Service {
-  id          String   @id @default(cuid())
+  id          String     @id @default(cuid())
   title       String
   number      String
-  description String   @db.Text
+  description String     @db.Text
   imageId     String?
   image       MediaFile? @relation("ServiceImage", fields: [imageId], references: [id])
   features    String[] // Array of feature strings
-  order       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([order])
-}
-
-// Testimonials
-model Testimonial {
-  id          String     @id @default(cuid())
-  quote       String     @db.Text
-  name        String
-  role        String
-  avatarId    String?
-  avatar      MediaFile? @relation("TestimonialAvatar", fields: [avatarId], references: [id])
-  rating      Int        @default(5) // 1-5
   order       Int        @default(0)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
@@ -165,14 +151,148 @@ model Testimonial {
   @@index([order])
 }
 
+// Testimonials
+model Testimonial {
+  id        String     @id @default(cuid())
+  quote     String     @db.Text
+  name      String
+  role      String
+  avatarId  String?
+  avatar    MediaFile? @relation("TestimonialAvatar", fields: [avatarId], references: [id])
+  rating    Int        @default(5) // 1-5
+  order     Int        @default(0)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([order])
+}
+
 // FAQ
 model FAQ {
+  id        String   @id @default(cuid())
+  question  String   @db.Text
+  answer    String   @db.Text // HTML content from TipTap
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([order])
+}
+
+// Site Settings - Global site configuration
+model SiteSettings {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String   @db.Text
+  type      String // 'text', 'image', 'richText', 'json'
+  group     String? // 'header', 'footer', 'contact', 'social', 'seo', 'theme'
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([group])
+  @@index([key])
+}
+
+// Navigation Menu Items
+model MenuItem {
+  id        String     @id @default(cuid())
+  label     String
+  href      String
+  order     Int        @default(0)
+  parentId  String?
+  parent    MenuItem?  @relation("MenuItemParent", fields: [parentId], references: [id], onDelete: Cascade)
+  children  MenuItem[] @relation("MenuItemParent")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([order])
+  @@index([parentId])
+}
+
+// Content Blocks - Page sections/blocks
+model ContentBlock {
+  id        String     @id @default(cuid())
+  type      String // 'hero', 'about', 'features', 'howItWorks', 'services', 'gallery', 'testimonials', 'faq', 'satisfaction', 'cta', 'tips', 'custom'
+  page      String? // 'home', 'about', 'services', 'blog', 'gallery', 'contact', 'faq', null for reusable
+  title     String?
+  subtitle  String?
+  content   String?    @db.Text // Rich text or JSON
+  imageId   String?
+  image     MediaFile? @relation("ContentBlockImage", fields: [imageId], references: [id])
+  order     Int        @default(0)
+  visible   Boolean    @default(true)
+  config    Json? // Flexible JSON for block-specific settings
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([page, order])
+  @@index([type])
+  @@index([visible])
+}
+
+// Feature Items - For Features section
+model Feature {
   id          String   @id @default(cuid())
-  question    String   @db.Text
-  answer      String   @db.Text // HTML content from TipTap
+  title       String
+  description String   @db.Text
+  icon        String? // Icon name or component identifier
   order       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([order])
+}
+
+// How It Works Steps
+model HowItWorksStep {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.Text
+  icon        String? // Icon name or component identifier
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([order])
+}
+
+// Page Heroes - Hero sections for individual pages
+model PageHero {
+  id          String     @id @default(cuid())
+  page        String     @unique // 'blog', 'gallery', 'services', 'about', 'faq', 'contact'
+  title       String
+  subtitle    String?
+  description String?    @db.Text
+  imageId     String?
+  image       MediaFile? @relation("PageHeroImage", fields: [imageId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([page])
+}
+
+// Satisfaction Metrics
+model SatisfactionMetric {
+  id        String   @id @default(cuid())
+  label     String
+  value     Int // Percentage value (0-100)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([order])
+}
+
+// Custom Pages - Dynamic pages that can be created via CMS
+model Page {
+  id          String   @id @default(cuid())
+  slug        String   @unique // URL slug (e.g., 'about', 'services')
+  label       String // Display name (e.g., 'Hakkımızda')
+  path        String // Full path (e.g., '/hakkimizda')
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([slug])
+  @@index([path])
 }

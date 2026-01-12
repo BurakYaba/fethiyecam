@@ -6,9 +6,21 @@ import { RiPhoneLine, RiMenuLine, RiCloseLine } from "@remixicon/react";
 import Link from "next/link";
 import Image from "next/image";
 
+interface MenuItem {
+  id: string;
+  label: string;
+  href: string;
+  children: MenuItem[];
+}
+
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [navLinks, setNavLinks] = useState<MenuItem[]>([]);
+  const [phone, setPhone] = useState("+905301207848");
+  const [ctaText, setCtaText] = useState("Teklif Al");
+  const [ctaLink, setCtaLink] = useState("/iletisim");
+  const [logo, setLogo] = useState("/Fethiye.png");
   const pathname = usePathname();
   const isContactPage = pathname === "/iletisim";
 
@@ -20,15 +32,42 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navLinks = [
-    { href: "/", label: "Ana Sayfa" },
-    { href: "/hakkimizda", label: "Hakkımızda" },
-    { href: "/hizmetler", label: "Hizmetler" },
-    { href: "/blog", label: "Blog" },
-    { href: "/galeri", label: "Galeri" },
-    { href: "/sss", label: "SSS" },
-    { href: "/iletisim", label: "İletişim" },
-  ];
+  useEffect(() => {
+    // Fetch menu items
+    fetch("/api/menu")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setNavLinks(data);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch menu:", error);
+        // Fallback to default menu
+        setNavLinks([
+          { id: "1", href: "/", label: "Ana Sayfa", children: [] },
+          { id: "2", href: "/hakkimizda", label: "Hakkımızda", children: [] },
+          { id: "3", href: "/hizmetler", label: "Hizmetler", children: [] },
+          { id: "4", href: "/blog", label: "Blog", children: [] },
+          { id: "5", href: "/galeri", label: "Galeri", children: [] },
+          { id: "6", href: "/sss", label: "SSS", children: [] },
+          { id: "7", href: "/iletisim", label: "İletişim", children: [] },
+        ]);
+      });
+
+    // Fetch settings
+    fetch("/api/settings")
+      .then((res) => res.json())
+      .then((settings) => {
+        if (settings["header.phone"]) setPhone(settings["header.phone"]);
+        if (settings["header.ctaText"]) setCtaText(settings["header.ctaText"]);
+        if (settings["header.ctaLink"]) setCtaLink(settings["header.ctaLink"]);
+        if (settings["header.logo"]) setLogo(settings["header.logo"]);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch settings:", error);
+      });
+  }, []);
 
   return (
     <>
@@ -44,7 +83,7 @@ export default function Header() {
             {/* Logo */}
             <Link href="/" className="flex items-center">
               <Image
-                src="/Fethiye.png"
+                src={logo}
                 alt="Fethiye Cam Temizleme"
                 width={250}
                 height={90}
@@ -76,7 +115,7 @@ export default function Header() {
                           : "bg-white group-hover:w-full"
                       }`}
                       style={{
-                        width: link.href === "#anasayfa" ? "100%" : "0%",
+                        width: pathname === link.href || (link.href === "/" && pathname === "/") ? "100%" : "0%",
                       }}
                     />
                   </Link>
@@ -87,7 +126,7 @@ export default function Header() {
               <div className="flex items-center gap-3">
                 {/* Phone Button - Outline Style */}
                 <a
-                  href="tel:+905301207848"
+                  href={`tel:${phone}`}
                   className={`btn-header-outline flex items-center gap-2 ${
                     isContactPage && !isScrolled
                       ? "!text-[#1a1a1a] [box-shadow:0_0_0_1px_#1a1a1a_inset]"
@@ -99,11 +138,11 @@ export default function Header() {
                       isContactPage && !isScrolled ? "!text-[#1a1a1a]" : ""
                     }`}
                   />
-                  <span>0530 120 78 48</span>
+                  <span>{phone.replace("+90", "0")}</span>
                 </a>
                 {/* Request Service Button - Filled Style */}
-                <Link href="/iletisim" className="btn-header-filled">
-                  Teklif Al
+                <Link href={ctaLink} className="btn-header-filled">
+                  {ctaText}
                 </Link>
               </div>
             </div>
@@ -138,7 +177,7 @@ export default function Header() {
         <div className="flex flex-col h-full p-6">
           <div className="flex items-center justify-between mb-8">
             <Image
-              src="/Fethiye.png"
+              src={logo}
               alt="Fethiye Cam Temizleme"
               width={240}
               height={60}
@@ -155,7 +194,7 @@ export default function Header() {
           <nav className="flex flex-col gap-2 flex-1">
             {navLinks.map((link) => (
               <Link
-                key={link.href}
+                key={link.id}
                 href={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="text-base font-normal text-gray-800 hover:text-[#FF7F00] py-3 border-b border-gray-100 transition-colors"
@@ -168,14 +207,14 @@ export default function Header() {
 
           <div className="mt-auto space-y-3 pt-6">
             <a
-              href="tel:+905301207848"
+              href={`tel:${phone}`}
               className="btn-header-outline w-full justify-center"
             >
               <RiPhoneLine className="w-4 h-4" />
-              <span>0530 120 78 48</span>
+              <span>{phone.replace("+90", "0")}</span>
             </a>
-            <Link href="/iletisim" className="btn-header-filled w-full">
-              Teklif Al
+            <Link href={ctaLink} className="btn-header-filled w-full">
+              {ctaText}
             </Link>
           </div>
         </div>
