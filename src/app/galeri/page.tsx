@@ -7,6 +7,9 @@ import Image from "next/image";
 import Lightbox from "@/components/Lightbox";
 import { RiImageLine } from "@remixicon/react";
 
+// Note: Client components can't export metadata. This page needs to be converted to server component for SEO
+// For now, metadata is inherited from layout
+
 export default function GaleriPage() {
   const [albums, setAlbums] = useState<any[]>([]);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -16,13 +19,13 @@ export default function GaleriPage() {
   useEffect(() => {
     const fetchAlbums = async () => {
       try {
-        const response = await fetch('/api/gallery');
+        const response = await fetch("/api/gallery");
         if (response.ok) {
           const data = await response.json();
           setAlbums(data);
         }
       } catch (error) {
-        console.error('Failed to fetch albums:', error);
+        console.error("Failed to fetch albums:", error);
       }
     };
     fetchAlbums();
@@ -43,14 +46,13 @@ export default function GaleriPage() {
   };
 
   const nextImage = () => {
-    setLightboxIndex(
-      (prev) => (prev + 1) % currentAlbumImages.length
-    );
+    setLightboxIndex((prev) => (prev + 1) % currentAlbumImages.length);
   };
 
   const previousImage = () => {
     setLightboxIndex(
-      (prev) => (prev - 1 + currentAlbumImages.length) % currentAlbumImages.length
+      (prev) =>
+        (prev - 1 + currentAlbumImages.length) % currentAlbumImages.length,
     );
   };
   return (
@@ -123,46 +125,50 @@ export default function GaleriPage() {
                 </div>
               ) : (
                 albums.map((album) => (
-                <div
-                  key={album.id}
-                  className="blog-card cursor-pointer group overflow-hidden"
-                  onClick={() => openAlbum(album)}
-                >
-                  <div className="relative h-64 overflow-hidden">
-                    <Image
-                      src={album.coverImage?.url || album.images?.[0]?.image?.url || "/images/image_service_01.jpg"}
-                      alt={album.title}
-                      fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-110"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      loading="lazy"
-                    />
-                    {/* Overlay on hover */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity text-center">
-                        <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center mb-3 mx-auto">
-                          <RiImageLine className="w-8 h-8 text-[#3D8C40]" />
+                  <div
+                    key={album.id}
+                    className="blog-card cursor-pointer group overflow-hidden"
+                    onClick={() => openAlbum(album)}
+                  >
+                    <div className="relative h-64 overflow-hidden">
+                      <Image
+                        src={
+                          album.coverImage?.url ||
+                          album.images?.[0]?.image?.url ||
+                          "/images/image_service_01.jpg"
+                        }
+                        alt={album.title}
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover:scale-110"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        loading="lazy"
+                      />
+                      {/* Overlay on hover */}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity text-center">
+                          <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center mb-3 mx-auto">
+                            <RiImageLine className="w-8 h-8 text-[#3D8C40]" />
+                          </div>
+                          <span className="text-white font-semibold text-lg">
+                            Albümü Aç
+                          </span>
                         </div>
-                        <span className="text-white font-semibold text-lg">
-                          Albümü Aç
-                        </span>
+                      </div>
+                    </div>
+                    {/* Album Info */}
+                    <div className="p-5 bg-white">
+                      <h3
+                        className="text-lg font-semibold text-gray-900 mb-2"
+                        style={{ fontFamily: "var(--font-heading)" }}
+                      >
+                        {album.title}
+                      </h3>
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <RiImageLine className="w-4 h-4" />
+                        <span>{album.images?.length || 0} Fotoğraf</span>
                       </div>
                     </div>
                   </div>
-                  {/* Album Info */}
-                  <div className="p-5 bg-white">
-                    <h3
-                      className="text-lg font-semibold text-gray-900 mb-2"
-                      style={{ fontFamily: "var(--font-heading)" }}
-                    >
-                      {album.title}
-                    </h3>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <RiImageLine className="w-4 h-4" />
-                      <span>{album.images?.length || 0} Fotoğraf</span>
-                    </div>
-                  </div>
-                </div>
                 ))
               )}
             </div>

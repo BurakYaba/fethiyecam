@@ -1,44 +1,93 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
+import { RiCheckLine, RiPhoneLine, RiMailLine } from "@remixicon/react";
+import { db } from "@/lib/db";
+import FAQAccordion from "@/components/FAQAccordion";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import {
-  RiArrowDownSLine,
-  RiCheckLine,
-  RiQuestionLine,
-  RiPhoneLine,
-  RiMailLine,
-} from "@remixicon/react";
+  generatePageTitle,
+  getAbsoluteUrl,
+  getDefaultOgImage,
+} from "@/lib/seo-utils";
+import { getFAQSchema, getBreadcrumbSchema } from "@/lib/structured-data";
 
-export default function SSSPage() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const [faqs, setFaqs] = useState<any[]>([]);
+export const revalidate = 3600;
 
-  useEffect(() => {
-    const fetchFAQs = async () => {
-      try {
-        const response = await fetch('/api/faq');
-        if (response.ok) {
-          const data = await response.json();
-          setFaqs(data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch FAQs:', error);
-      }
-    };
-    fetchFAQs();
-  }, []);
+export async function generateMetadata(): Promise<Metadata> {
+  const ogImage = await getDefaultOgImage();
 
-  const toggleFAQ = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
+  return {
+    title: generatePageTitle("Sıkça Sorulan Sorular"),
+    description:
+      "Fethiye cam temizliği hizmetlerimiz hakkında en çok sorulan sorular ve cevapları. Randevu, fiyat, hizmet detayları ve daha fazlası.",
+    keywords:
+      "cam temizliği sss, cam temizleme soruları, fethiye cam temizlik fiyatları, cam temizliği nasıl yapılır",
+    openGraph: {
+      title: "Sıkça Sorulan Sorular | Fethiye Cam Temizleme",
+      description:
+        "Cam temizliği hizmetlerimiz hakkında tüm sorularınızın cevapları.",
+      url: getAbsoluteUrl("/sss"),
+      siteName: "Fethiye Cam Temizleme",
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: "Fethiye Cam Temizleme SSS",
+        },
+      ],
+      locale: "tr_TR",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Sıkça Sorulan Sorular | Fethiye Cam Temizleme",
+      description:
+        "Cam temizliği hizmetlerimiz hakkında tüm sorularınızın cevapları.",
+      images: [ogImage],
+    },
+    alternates: {
+      canonical: getAbsoluteUrl("/sss"),
+    },
   };
+}
+
+export default async function SSSPage() {
+  const faqs = await db.fAQ.findMany({
+    orderBy: {
+      order: "asc",
+    },
+  });
 
   return (
     <>
       <Header />
+      <Breadcrumbs
+        items={[
+          { label: "Ana Sayfa", href: "/" },
+          { label: "Sıkça Sorulan Sorular", href: "/sss" },
+        ]}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(getFAQSchema(faqs)),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            getBreadcrumbSchema([
+              { name: "Ana Sayfa", url: "/" },
+              { name: "Sıkça Sorulan Sorular", url: "/sss" },
+            ]),
+          ),
+        }}
+      />
       <main>
         {/* Hero Section */}
         <section className="relative min-h-screen flex items-center">
@@ -99,45 +148,7 @@ export default function SSSPage() {
             </div>
 
             {/* FAQ Accordion */}
-            <div className="max-w-4xl mx-auto space-y-4">
-              {faqs.map((faq, index) => (
-                <div
-                  key={faq.id}
-                  className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 transition-all hover:shadow-md"
-                >
-                  <button
-                    onClick={() => toggleFAQ(index)}
-                    className="w-full px-6 py-5 text-left flex items-center justify-between gap-4 hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="flex items-start gap-4 flex-1">
-                      <div className="w-8 h-8 rounded-lg bg-[#3D8C40]/10 flex items-center justify-center shrink-0 mt-0.5">
-                        <RiQuestionLine className="w-5 h-5 text-[#3D8C40]" />
-                      </div>
-                      <h3
-                        className="text-lg md:text-xl font-semibold text-gray-900 flex-1"
-                        style={{ fontFamily: "var(--font-heading)" }}
-                      >
-                        {faq.question}
-                      </h3>
-                    </div>
-                    <RiArrowDownSLine
-                      className={`w-6 h-6 text-gray-400 shrink-0 transition-transform duration-300 ${
-                        openIndex === index ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-                  <div
-                    className={`overflow-hidden transition-all duration-300 ${
-                      openIndex === index ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-                    }`}
-                  >
-                    <div className="px-6 pb-5 pl-[72px]">
-                      <div className="text-gray-600 leading-relaxed" dangerouslySetInnerHTML={{ __html: faq.answer }} />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <FAQAccordion faqs={faqs} />
 
             {/* CTA Section */}
             <div className="max-w-4xl mx-auto mt-16">
@@ -169,7 +180,10 @@ export default function SSSPage() {
                 <div className="relative z-10">
                   <h3
                     className="text-2xl md:text-3xl text-white mb-4"
-                    style={{ fontFamily: "var(--font-heading)", fontWeight: 600 }}
+                    style={{
+                      fontFamily: "var(--font-heading)",
+                      fontWeight: 600,
+                    }}
                   >
                     Başka Sorularınız mı Var?
                   </h3>
@@ -203,4 +217,3 @@ export default function SSSPage() {
     </>
   );
 }
-

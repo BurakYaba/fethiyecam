@@ -1,18 +1,59 @@
+import { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 import { RiArrowRightLine } from "@remixicon/react";
 import { db } from "@/lib/db";
+import {
+  generatePageTitle,
+  getAbsoluteUrl,
+  getDefaultOgImage,
+} from "@/lib/seo-utils";
 
-// Force dynamic rendering - prevent static generation and caching
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+export const revalidate = 3600;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const ogImage = await getDefaultOgImage();
+
+  return {
+    title: generatePageTitle("Blog"),
+    description:
+      "Profesyonel cam temizliği hakkında bilmeniz gereken her şey. İpuçları, rehberler ve uzman önerileri.",
+    keywords:
+      "cam temizliği ipuçları, cam temizleme rehberi, pencere temizliği nasıl yapılır, cam bakımı",
+    openGraph: {
+      title: "Blog | Fethiye Cam Temizleme",
+      description: "Profesyonel cam temizliği hakkında İpuçları ve rehberler.",
+      url: getAbsoluteUrl("/blog"),
+      siteName: "Fethiye Cam Temizleme",
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: "Fethiye Cam Temizleme Blog",
+        },
+      ],
+      locale: "tr_TR",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Blog | Fethiye Cam Temizleme",
+      description: "Profesyonel cam temizliği hakkında İpuçları ve rehberler.",
+      images: [ogImage],
+    },
+    alternates: {
+      canonical: getAbsoluteUrl("/blog"),
+    },
+  };
+}
 
 export default async function BlogPage() {
   let blogPosts: any[] = [];
   let pageHero: any = null;
-  
+
   try {
     blogPosts = await db.blogPost.findMany({
       where: {
@@ -20,29 +61,30 @@ export default async function BlogPage() {
           lte: new Date(),
         },
       },
-      orderBy: { publishedAt: 'desc' },
+      orderBy: { publishedAt: "desc" },
       include: {
         image: true,
       },
     });
   } catch (error) {
-    console.error('Failed to fetch blog posts:', error);
+    console.error("Failed to fetch blog posts:", error);
   }
 
   try {
     pageHero = await db.pageHero.findUnique({
-      where: { page: 'blog' },
+      where: { page: "blog" },
       include: { image: true },
     });
   } catch (error) {
-    console.error('Failed to fetch page hero:', error);
+    console.error("Failed to fetch page hero:", error);
   }
 
   const heroData = pageHero || {
-    title: 'Cam Temizlik\nİpuçları ve Rehberler',
-    subtitle: 'Blog',
-    description: 'Profesyonel cam temizliği hakkında bilmeniz gereken her şey. İpuçları, rehberler ve uzman önerileri.',
-    image: { url: '/images/bloghero.webp' },
+    title: "Cam Temizlik\nİpuçları ve Rehberler",
+    subtitle: "Blog",
+    description:
+      "Profesyonel cam temizliği hakkında bilmeniz gereken her şey. İpuçları, rehberler ve uzman önerileri.",
+    image: { url: "/images/bloghero.webp" },
   };
 
   return (
@@ -54,7 +96,7 @@ export default async function BlogPage() {
           {/* Background Image */}
           <div className="absolute inset-0">
             <Image
-              src={heroData.image?.url || '/images/bloghero.webp'}
+              src={heroData.image?.url || "/images/bloghero.webp"}
               alt="Blog"
               fill
               className="object-cover"
@@ -80,7 +122,11 @@ export default async function BlogPage() {
               )}
               <h1
                 className="text-4xl md:text-5xl lg:text-6xl text-white mb-6 leading-tight"
-                style={{ fontFamily: "var(--font-heading)", fontWeight: 600, whiteSpace: "pre-line" }}
+                style={{
+                  fontFamily: "var(--font-heading)",
+                  fontWeight: 600,
+                  whiteSpace: "pre-line",
+                }}
               >
                 {heroData.title}
               </h1>
@@ -115,99 +161,113 @@ export default async function BlogPage() {
                 </div>
               ) : (
                 blogPosts.map((post: any) => (
-                <Link
-                  key={post.id}
-                  href={`/blog/${post.slug}`}
-                  className={`blog-card block ${
-                    post.featured ? "md:row-span-1" : ""
-                  }`}
-                >
-                  <div
-                    className={`relative overflow-hidden ${
-                      post.featured ? "h-full" : ""
-                    } ${post.featured ? "h-64 md:h-full" : "h-48"}`}
+                  <Link
+                    key={post.id}
+                    href={`/blog/${post.slug}`}
+                    className={`blog-card block ${
+                      post.featured ? "md:row-span-1" : ""
+                    }`}
                   >
-                    <Image
-                      src={post.image?.url || "/images/moving_cards_image_01.png"}
-                      alt={post.title}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      loading="lazy"
-                    />
+                    <div
+                      className={`relative overflow-hidden ${
+                        post.featured ? "h-full" : ""
+                      } ${post.featured ? "h-64 md:h-full" : "h-48"}`}
+                    >
+                      <Image
+                        src={
+                          post.image?.url || "/images/moving_cards_image_01.png"
+                        }
+                        alt={post.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        loading="lazy"
+                      />
 
-                    {/* Overlay for featured */}
-                    {post.featured && (
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
+                      {/* Overlay for featured */}
+                      {post.featured && (
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
+                          <span
+                            className="text-[#FF7F00] text-sm italic mb-2"
+                            style={{ fontFamily: "var(--font-heading)" }}
+                          >
+                            {post.publishedAt
+                              ? new Date(post.publishedAt).toLocaleDateString(
+                                  "tr-TR",
+                                  {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                  },
+                                )
+                              : new Date(post.createdAt).toLocaleDateString(
+                                  "tr-TR",
+                                  {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                  },
+                                )}
+                          </span>
+                          <h3
+                            className="text-xl text-white mb-2"
+                            style={{ fontFamily: "var(--font-heading)" }}
+                          >
+                            {post.title}
+                          </h3>
+                          <p className="text-white/80 text-sm mb-4 line-clamp-2">
+                            {post.excerpt}
+                          </p>
+                          <div className="mt-4">
+                            <div className="w-10 h-10 rounded-full bg-[#FF7F00]/80 flex items-center justify-center">
+                              <RiArrowRightLine className="w-5 h-5 text-white" />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Content for non-featured */}
+                    {!post.featured && (
+                      <div className="p-5 bg-white">
                         <span
-                          className="text-[#FF7F00] text-sm italic mb-2"
+                          className="text-[#FF7F00] text-sm italic"
                           style={{ fontFamily: "var(--font-heading)" }}
                         >
                           {post.publishedAt
-                            ? new Date(post.publishedAt).toLocaleDateString("tr-TR", {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                              })
-                            : new Date(post.createdAt).toLocaleDateString("tr-TR", {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                              })}
+                            ? new Date(post.publishedAt).toLocaleDateString(
+                                "tr-TR",
+                                {
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                },
+                              )
+                            : new Date(post.createdAt).toLocaleDateString(
+                                "tr-TR",
+                                {
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                },
+                              )}
                         </span>
                         <h3
-                          className="text-xl text-white mb-2"
+                          className="text-lg text-gray-900 mt-2 mb-2"
                           style={{ fontFamily: "var(--font-heading)" }}
                         >
                           {post.title}
                         </h3>
-                        <p className="text-white/80 text-sm mb-4 line-clamp-2">
+                        <p className="text-gray-600 text-sm line-clamp-2">
                           {post.excerpt}
                         </p>
-                        <div className="mt-4">
-                          <div className="w-10 h-10 rounded-full bg-[#FF7F00]/80 flex items-center justify-center">
-                            <RiArrowRightLine className="w-5 h-5 text-white" />
-                          </div>
+                        <div className="mt-4 flex items-center gap-2 text-[#FF7F00] text-sm font-medium">
+                          <span>Devamını Oku</span>
+                          <RiArrowRightLine className="w-4 h-4" />
                         </div>
                       </div>
                     )}
-                  </div>
-
-                  {/* Content for non-featured */}
-                  {!post.featured && (
-                    <div className="p-5 bg-white">
-                      <span
-                        className="text-[#FF7F00] text-sm italic"
-                        style={{ fontFamily: "var(--font-heading)" }}
-                      >
-                        {post.publishedAt
-                          ? new Date(post.publishedAt).toLocaleDateString("tr-TR", {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            })
-                          : new Date(post.createdAt).toLocaleDateString("tr-TR", {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            })}
-                      </span>
-                      <h3
-                        className="text-lg text-gray-900 mt-2 mb-2"
-                        style={{ fontFamily: "var(--font-heading)" }}
-                      >
-                        {post.title}
-                      </h3>
-                      <p className="text-gray-600 text-sm line-clamp-2">
-                        {post.excerpt}
-                      </p>
-                      <div className="mt-4 flex items-center gap-2 text-[#FF7F00] text-sm font-medium">
-                        <span>Devamını Oku</span>
-                        <RiArrowRightLine className="w-4 h-4" />
-                      </div>
-                    </div>
-                  )}
-                </Link>
+                  </Link>
                 ))
               )}
             </div>

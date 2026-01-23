@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter, Inter_Tight, Caveat } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import { getLocalBusinessSchema } from "@/lib/structured-data";
+import { getAbsoluteUrl } from "@/lib/seo-utils";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,8 +30,8 @@ const caveat = Caveat({
 
 export const metadata: Metadata = {
   title: "Fethiye Cam Temizleme | Profesyonel Cam Temizlik Hizmetleri",
-  description: "Fethiye'de profesyonel cam temizlik hizmetleri. Ev, ofis ve işyeri camlarınız için güvenilir, sigortalı ve garantili temizlik. Ücretsiz teklif alın!",
-  keywords: "cam temizleme, fethiye, cam temizlik, pencere temizleme, profesyonel temizlik, cam yıkama",
+  description:
+    "Fethiye'de profesyonel cam temizlik hizmetleri. Ev, ofis ve işyeri camlarınız için güvenilir, sigortalı ve garantili temizlik. Ücretsiz teklif alın!",
   icons: {
     icon: "/Fethiye.png",
     shortcut: "/Fethiye.png",
@@ -37,20 +39,55 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Fethiye Cam Temizleme | Profesyonel Cam Temizlik Hizmetleri",
-    description: "Fethiye'de profesyonel cam temizlik hizmetleri. Ücretsiz teklif alın!",
+    description:
+      "Fethiye'de profesyonel cam temizlik hizmetleri. Ücretsiz teklif alın!",
+    url: getAbsoluteUrl("/"),
+    siteName: "Fethiye Cam Temizleme",
     locale: "tr_TR",
     type: "website",
+    images: [
+      {
+        url: getAbsoluteUrl("/og-default.jpg"),
+        width: 1200,
+        height: 630,
+        alt: "Fethiye Cam Temizleme",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Fethiye Cam Temizleme | Profesyonel Cam Temizlik Hizmetleri",
+    description: "Fethiye'de profesyonel cam temizlik hizmetleri.",
+    images: [getAbsoluteUrl("/og-default.jpg")],
+  },
+  alternates: {
+    canonical: getAbsoluteUrl("/"),
+    languages: {
+      "tr-TR": getAbsoluteUrl("/"),
+    },
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const localBusinessSchema = await getLocalBusinessSchema();
+
   return (
     <html lang="tr">
-      <body className={`${inter.variable} ${interTight.variable} ${caveat.variable} antialiased`}>
+      <body
+        className={`${inter.variable} ${interTight.variable} ${caveat.variable} antialiased`}
+      >
+        {localBusinessSchema && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(localBusinessSchema),
+            }}
+          />
+        )}
         <Providers>{children}</Providers>
       </body>
     </html>
